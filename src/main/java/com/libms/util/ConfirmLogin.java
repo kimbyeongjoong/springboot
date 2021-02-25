@@ -54,13 +54,15 @@ public class ConfirmLogin {
         HttpSession session = request.getSession();
         try{
             User_infoVo info = (User_infoVo) session.getAttribute("member");
+            if(info.getRole().equals("ROLE_ADMIN"))
+                return true;
             if (!(info.getUser_id().equals(writer))) {
                 System.out.println("info.getUser_id() = " + info.getUser_id());
                 System.out.println("writer = " + writer);
                 response.setContentType("text/html; charset=UTF-8");
                 PrintWriter out = response.getWriter();
                 out.print("<script>");
-                out.print("alert('아이디를 확인해주세요.');");
+                out.print("alert('아이디를 확인해주세요.\\n올바르지 않은 접근입니다.');");
                 out.print("location.href = '../';");
                 out.print("</script>");
                 out.flush();

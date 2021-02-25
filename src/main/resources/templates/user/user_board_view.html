@@ -36,8 +36,9 @@
                         sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')"
                         th:href="@{user_board_reply(board_num=${board.board_num}, title=${board.title}, origin_no=${board.origin_no})}" 
                         class="btn btn-outline-primary" id="del">답변</a>
-                    <a sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" th:if="${board.writer} == ${session.member.user_id}"
+                    <a sec:authorize="hasRole('ROLE_USER')" th:if="${board.writer} == ${session.member.user_id}"
                         href="javascript:confirmDelete();" class="btn btn-outline-primary" id="del">삭제</a>
+                    <a sec:authorize="hasRole('ROLE_ADMIN')" href="javascript:confirmDelete();" class="btn btn-outline-primary" id="admin_del">삭제</a>
                     <!-- <a sec:authorize="hasRole('ROLE_USER')" th:href="@{user_board_comment(board_num=${board.board_num})}" 
                         class="btn btn-outline-primary">댓글</a> -->
                     <!-- th:href="@{user_board_delete(board_num=${board.board_num})}" -->
@@ -62,6 +63,8 @@
                                     <a sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" class="btn btn-outline-info btn-sm"  
                                         th:onclick="comment_to_comment([[${info.comment_num}]])">댓글</a>
                                     <a th:if="${info.writer} == ${session.member.user_id}" class="btn btn-outline-info btn-sm"  
+                                        th:onclick="comment_delete([[${info.comment_num}]], [[${info.writer}]])">삭제</a>
+                                    <a sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-outline-info btn-sm"
                                         th:onclick="comment_delete([[${info.comment_num}]], [[${info.writer}]])">삭제</a>
                                 </div>
                                 <div sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" class="list-group" th:id="|commentWriteDiv${info.comment_num}|" style="display: none;">

@@ -45,11 +45,13 @@
                     <th th:text="${#temporals.format(info.reg_datetime, 'yyyy-MM-dd HH:mm')}">등록일</th>
                     <th th:text="${info.hits}">조회수</th>
                 </tr>
-                <tr th:if="${user_board_list.isEmpty}">
-                    <th class="alert alert-info text-center"> 글이 없습니다.</th>
-                </tr>
             </tbody>
         </table>
+        <div th:if="${user_board_list.isEmpty}">
+            <div class="alert alert-info text-center">
+                <span>글이 없습니다.</span>
+            </div>
+        </div>
         <a sec:authorize="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')" href="user_board_writing" class="btn btn-outline-primary">글쓰기</a>
         <div sec:authorize="isAnonymous()" class="alert alert-info text-center" role="alert">
             <span>로그인 후 게시물 작성이 가능합니다.</span>
