@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User_info</title>
+    <meta charset="utf-8" />
+    <link th:replace="common/common :: css">
+    <link rel="stylesheet" href="../static/css/myCss/user_info.css">
+</head>
+<body>
+    <div class="Noto Sans" style="width: 80%; margin: auto;">
+        <h1>유저 정보</h1>
+        <div>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>아이디</th>
+                        <th>비밀번호</th>
+                        <th>이름</th>
+                        <th>전화번호</th>
+                        <th>이메일</th>
+                        <th>우편번호</th>
+                        <th>주소</th>
+                        <th>상세주소</th>
+                        <th>가입일</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>아이디</th>
+                        <th>비밀번호</th>
+                        <th>이름</th>
+                        <th>전화번호</th>
+                        <th>이메일</th>
+                        <th>우편번호</th>
+                        <th>주소</th>
+                        <th>상세주소</th>
+                        <th>가입일</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    <tr th:each="info : ${user_info_list}">
+                        <th th:text="${info.user_id}">아이디</th>
+                        <th th:text="${info.password}">비밀번호</th>
+                        <th th:text="${info.user_name}">이름</th>
+                        <th th:text="${info.user_tel}">전화번호</th>
+                        <th th:text="${info.user_email}">이메일</th>
+                        <th th:text="${info.post_number}">우편번호</th>
+                        <th th:text="${info.address1}">주소</th>
+                        <th th:text="${info.address2}">상세주소</th>
+                        <th th:text="${info.join_date}">가입일</th>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <script th:replace="common/common :: js"></script>
+</body>
+</html>

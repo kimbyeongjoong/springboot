@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html 
+    lang="ko"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>user_board</title>
+    <link th:replace="common/common :: css">
+    <link rel="stylesheet" href="../static/css/myCss/myBoardView.css">
+</head>
+<body>
+
+    <header th:replace="common/navtop :: navtop" ></header>
+
+        <div class="articleView">
+            <div class="articleHead list-group">
+                <div class="articleInfo">
+                    <div th:text="${board.writer}" th:value="${board.writer}" id="writer"></div>
+                    <div th:text="${#temporals.format(board.reg_datetime, 'yyyy-MM-dd HH:mm')}"></div>
+                    <div th:text="|조회: ${board.hits}|"></div>
+                </div>
+            </div>
+            <div class="articleMain list-group-item">
+                <div class="articleTitle">
+                    <div th:text="${board.title}"></div>
+                </div>
+                <div class="articleContent">
+                    <div th:utext="${board.content}"></div>
+                </div>
+                <div class="articleMenu">
+                    <a href="user_board" class="btn btn-outline-primary">목록</a>
+                    <a sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" th:if="${board.writer} == ${session.member.user_id}"
+                        th:href="@{user_board_modify(board_num=${board.board_num})}" class="btn btn-outline-primary">수정</a>
+                    <a th:if="${board.group_ord} == 0"
+                        sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')"
+                        th:href="@{user_board_reply(board_num=${board.board_num}, title=${board.title}, origin_no=${board.origin_no})}" 
+                        class="btn btn-outline-primary" id="del">답변</a>
+                    <a sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" th:if="${board.writer} == ${session.member.user_id}"
+                        href="javascript:confirmDelete();" class="btn btn-outline-primary" id="del">삭제</a>
+                    <!-- <a sec:authorize="hasRole('ROLE_USER')" th:href="@{user_board_comment(board_num=${board.board_num})}" 
+                        class="btn btn-outline-primary">댓글</a> -->
+                    <!-- th:href="@{user_board_delete(board_num=${board.board_num})}" -->
+                </div>
+            </div>
+            <!-- th:data-indent="${info.indent}" 또는 data-indent="1" -->
+            <div class="articleCommentView" id="commentDiv">
+                <div class="articleComment">
+                    <ul class="list-group">
+                        <li th:each="info : ${comment_list}" th:data-indent="${info.indent}" class="list-group-item commentOneBox">
+                            <div class="commentOne" th:id="|cn_${info.comment_num}|">
+                                <strong class="commentWriterInfo">
+                                    <span th:text="${info.writer}" class="commentWriter"></span>
+                                    <span th:text="${#temporals.format(info.reg_datetime, 'yyyy-MM-dd HH:mm')}" class="commentDate"></span>
+                                    <!-- <span th:text="|indent : ${info.indent}|"></span> -->
+                                    <!-- indent 가 2이상인 댓글은 대댓글이기 때문에 그거에 맞춰서 css를 적용시키면 된다. -->
+                                </strong>
+                                <div class="comment">
+                                    <span th:text="${info.content}"></span>
+                                </div>
+                                <div class="bottomLine" sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')">
+                                    <a sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" class="btn btn-outline-info btn-sm"  
+                                        th:onclick="comment_to_comment([[${info.comment_num}]])">댓글</a>
+                                    <a th:if="${info.writer} == ${session.member.user_id}" class="btn btn-outline-info btn-sm"  
+                                        th:onclick="comment_delete([[${info.comment_num}]], [[${info.writer}]])">삭제</a>
+                                </div>
+                                <div sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" class="list-group" th:id="|commentWriteDiv${info.comment_num}|" style="display: none;">
+                                    <form action="#" th:id="|commentForm${info.comment_num}|" method="POST">
+                                        <input type="hidden" name="board_num" th:id="|comment_board_num${info.comment_num}|">
+                                        <input type="hidden" name="comment_num" th:id="|comment_num${info.comment_num}|">
+                                        <input type="hidden" name="comment_origin_no" th:id="|comment_origin_no${info.comment_num}|">
+                                        <input type="hidden" name="writer" th:id="|comment_writer${info.comment_num}|">
+                                        <textarea class="form-control" name="content" th:id="|comment_content${info.comment_num}|" rows="3" cols="130" style="resize: none;"></textarea>
+                                        <br>
+                                        <a class="btn btn-outline-primary btn-sm" 
+                                            th:onclick="comment_write2([[${board.board_num}]], [[${info.comment_num}]], [[${info.comment_origin_no}]], [[${session.member.user_id}]])">대댓글등록</a>
+                                        <a class="btn btn-outline-primary btn-sm" th:onclick="comment_cansel([[${info.comment_num}]])">취소</a>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div th:if="${comment_list.isEmpty}">
+                        <p class="alert alert-info text-center">
+                            댓글이 없습니다.
+                        </p>
+                    </div>
+                    <div sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" class="list-group" id="commentWriteDiv">
+                        <form action="#" id="commentForm" method="POST">
+                            <input type="hidden" name="board_num" id="comment_board_num">
+                            <input type="hidden" name="writer" id="comment_writer">
+                            <textarea class="form-control" name="content"  rows="3" cols="130" style="resize: none;"></textarea>
+                            <br>
+                            <a class="btn btn-outline-primary btn-sm" 
+                                th:onclick="comment_write([[${board.board_num}]], [[${session.member.user_id}]])">댓글등록</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <script th:replace="common/common :: js"></script>
+    <script th:inline="javascript">
+        // 다른 라이브러리, 다른 버전의 jQuery와 충돌 방지하기
+        let $j = jQuery.noConflict();
+
+        // 댓글 indent 값으로 css구분하기
+        let comment_indent = document.querySelectorAll('.commentOneBox');
+        // 반복문으로 indent(댓글 깊이)를 각각 구분한다.
+        for(let i = 0; i < comment_indent.length; i++){
+            // 댓글의 data속성을 참조해서 변수에 담는다.
+            let result = comment_indent[i].getAttribute('data-indent');
+            // indent가 2이상인 것은 전부 대댓글이므로 comment_reply 클래스를 추가(add)한다.
+            if(result > 1)
+                comment_indent[i].classList.add("comment_reply");
+        }
+
+        function confirmDelete(){
+            let result = confirm('게시물을 삭제하시겠습니까?');
+            /* <!CDATA[ */
+            let board_num = /*[[${board.board_num}]]*/ "";
+            /* ]]> */
+            console.log('result = ', result);
+            if(result)
+                location.href = "user_board_delete?board_num=" + board_num;
+
+        }
+
+        //댓글등록
+        function comment_write(board_num, writer){
+            $j('#comment_board_num').val(board_num);
+            $j('#comment_writer').val(writer);
+            let param = $j('#commentForm').serialize();
+            $j.ajax({
+                    type : 'post',
+                    url : './userCommentWrite',
+                    dataType : 'text',
+                    data : param,
+                    success : function(data){
+                        console.log('ajax success = ', data);
+                        location.reload();
+                    },
+                    error:function(request, status, error){
+                        alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            			if(error != null)
+                            location.reload();
+                    }
+            });
+
+        }
+
+        // 대댓글 창 열기
+        let append_confirm = false;
+        function comment_to_comment(comment_num){
+            if(append_confirm === false){
+                append_confirm = true;
+                $j('#commentWriteDiv').hide();
+                // $j('#commentWriteDiv' + comment_num).show();
+                $j('#commentWriteDiv' + comment_num).css("display","block");
+            }
+        }
+
+        //대댓글등록
+        function comment_write2(board_num, comment_num, comment_origin_no, writer){
+            $j('#comment_board_num' + comment_num).val(board_num);
+            $j('#comment_num' + comment_num).val(comment_num);
+            $j('#comment_origin_no' + comment_num).val(comment_origin_no);
+            $j('#comment_writer' + comment_num).val(writer);
+            console.log("content = " + document.getElementById('comment_content' + comment_num).value);
+            let param = new Object();
+            param = $j('#commentForm' + comment_num).serialize();
+            alert("comment_write2 param" + param);
+            $j.ajax({
+                    type : 'post',
+                    url : './userCommentWrite2',
+                    dataType : 'text',
+                    data : param,
+                    success : function(data){
+                        location.reload();
+                    },
+                    error:function(request, status, error){
+                        alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            			if(error != null)
+                            location.reload();
+                    }
+            });
+
+        }
+
+        // 대댓글 창 없애기
+        function comment_cansel(comment_num){
+            if(append_confirm === true){
+                append_confirm = false;
+                $j('#commentWriteDiv').show();  // 일반 댓글 작성 창
+                $j('#commentWriteDiv' + comment_num).css("display","none"); // 대댓글 작성 창
+            }
+        }
+
+        //댓글삭제
+        function comment_delete(comment_num, writer){
+            let result = confirm(comment_num + '번 게시물을 삭제하시겠습니까?\\n작성자 : ' + writer);
+            if(!result){
+                alert('삭제 취소');
+                return false;
+            }
+            let obj = {
+                comment_num : comment_num,
+                writer : writer
+            };
+            $j.ajax({
+                    type : 'post',
+                    url : './commentDelete',
+                    dataType : 'text',
+                    data : obj,
+                    success : function(data){
+                        location.reload();
+                    },
+                    error:function(request, status, error){
+                        alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                        if(error != null)
+                            location.reload();
+                            // $j("#commentDiv").load("user_board_view.html");
+                    }
+            });
+            // div_load()
+        }
+
+        // function div_load(){
+        //     $j("#commentDiv").load(location_href + '#commentDiv');
+        // }
+        
+    </script>
+</body>
+</html>
+
+
+<!-- <script th:inline="javascript">
+
+    let $j = jQuery.noConflict();
+    function confirmDelete(){
+        let result = confirm('게시물을 삭제하시겠습니까?');
+        /* <!CDATA[ */
+        let board_num = /*[[${board.board_num}]]*/ "";
+        /* ]]> */
+        console.log('result = ', result);
+        if(result)
+            location.href = "user_board_delete?board_num=" + board_num;
+
+    }
+
+    //댓글등록
+    function comment_write(board_num, writer){
+        $j('#comment_board_num').val(board_num);
+        $j('#comment_writer').val(writer);
+        let param = $j('#commentForm').serialize();
+        $j.ajax({
+                type : 'post',
+                url : './userCommentWrite',
+                dataType : 'text',
+                data : param,
+                success : function(data){
+                    console.log('ajax success = ', data);
+                    location.reload();
+                },
+                error:function(request, status, error){
+                    alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                    if(error != null)
+                        location.reload();
+                }
+        });
+
+    }
+
+    // 대댓글 창 열기
+    let append_confirm = false;
+    let comment_num_temp = 0;
+    function comment_to_comment(comment_num){
+        if(append_confirm === false){
+            append_confirm = true;
+            $j('#commentWriteDiv').hide();
+            $j('#commentWriteDiv2').css("display","none");
+            $j('#commentWriteDiv2').clone().appendTo('#cn_' + comment_num);
+            comment_num_temp = comment_num;
+        }
+    }
+
+    //대댓글등록 미완성
+    function comment_write2(writer){
+        $j('#comment_board_num2').val(comment_num_temp);
+        $j('#comment_writer2').val(writer);
+        let param = $j('#commentForm2').serialize();
+        alert("comment_write2 param" + param);
+        $j.ajax({
+                type : 'post',
+                url : './userCommentWrite2',
+                dataType : 'text',
+                data : param,
+                success : function(data){
+                    location.reload();
+                },
+                error:function(request, status, error){
+                    alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                    if(error != null)
+                        location.reload();
+                }
+        });
+
+    }
+
+    // 대댓글 창 없애기
+    function comment_cansel(){
+        if(append_confirm === true){
+            append_confirm = false;
+            $j('#commentWriteDiv').show();
+            $j('#commentWriteDiv2').remove();
+            $j('#commentWriteDiv2').css("display","block");
+            comment_num_temp = 0;
+        }
+    }
+
+    //댓글삭제
+    function comment_delete(comment_num, writer){
+        /* <!CDATA[ */
+        let obj = {
+            comment_num : comment_num,
+            writer : writer
+        };
+        /* ]]> */
+        $j.ajax({
+                type : 'post',
+                url : './commentDelete',
+                dataType : 'text',
+                data : obj,
+                success : function(data){
+                    // location.reload();
+                },
+                error:function(request, status, error){
+                    alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                    if(error != null)
+                        location.reload();
+                        // $j("#commentDiv").load("user_board_view.html");
+                }
+        });
+        div_load()
+    }
+
+    function div_load(){
+        $j("#commentDiv").load(location_href + '#commentDiv');
+    }
+    
+
+
+
+</script> -->

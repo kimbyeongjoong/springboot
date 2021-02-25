@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>user_board_modify</title>
+    <link th:replace="common/common :: css">
+    <link rel="stylesheet" href="../static/css/summernote/summernote-lite.css">
+    <link rel="stylesheet" href="../static/css/myCss/myBoardWrite.css">
+</head>
+<body>
+    <header th:replace="common/navtop :: navtop" ></header>
+    <div class="article_write">
+        <p class="write_title">글 수정</p>
+        <form method="POST" action="user_board_modifyDo" name="user_board" class="reg_form" enctype="multipart/form-data">
+            <select name="category" id="category" required>
+                <option th:each="cat : ${category}" th:text="${cat.category_name}" th:value="${cat.category_no}" th:id="${cat.category_no}"></option>
+            </select>
+            <input th:value="${board.board_num}" type="hidden" name="board_num">
+            <input th:value="${board.writer}" type="text" name="writer" class="form-control col-1 writer" readonly>
+            <label for="title">&nbsp제목:</label>
+            <input th:value="${board.title}" type="text" name="title" id="title" class="board_title form-control col-6" required>
+            <textarea th:utext="${board.content}" id="summernote" name="content"></textarea>
+            <input type="submit" class="btn btn-outline-success submit_btn" value="작성완료">
+        </form>
+        <a href="user_board" class="btn btn-outline-primary">목록</a>
+    </div>
+
+    <script th:replace="common/common :: js"></script>
+    <script type="text/javascript" src="../static/js/summernote/summernote-lite.js"></script>
+    <script type="text/javascript" src="../static/js/summernote/lang/summernote-ko-KR.js"></script>
+    <script type="text/javascript" src="../static/js/myJs/myBoardWrite.js"></script>
+
+    <script th:inline="javascript">
+        /* <!CDATA[ */
+        let cate = /*[[${board.category}]]*/ "";
+        /* ]]> */
+        let true_cat = document.getElementById(cate);
+        true_cat.selected = true;
+
+    </script>
+
+</body>
+</html>

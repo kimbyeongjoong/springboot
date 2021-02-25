@@ -1,0 +1,99 @@
+.articleView{
+    width: 80%;
+    height: auto;
+    margin: auto;
+    margin-bottom: 100px;
+}
+
+.articleView .articleHead{
+    margin: auto;
+}
+
+.articleView .articleHead .articleInfo{
+    background-color: rgb(219, 218, 218);
+    margin-top: 30px;
+    height: 25px;
+}
+
+.articleView .articleHead .articleInfo div{
+    display: inline;
+    text-align: center;
+    font-weight: 500;
+}
+
+.articleView .articleHead .articleInfo div:nth-child(1){
+    margin-left: 15%; 
+}
+
+.articleView .articleHead .articleInfo div:nth-child(2){
+    margin-left: 20%; 
+}
+
+.articleView .articleHead .articleInfo div:nth-child(3){
+    margin-left: 20%; 
+}
+
+.articleView .articleMain{
+    display: block;
+    margin: auto;
+    height: auto;
+}
+
+.articleView .articleMain .articleTitle{
+    margin: 20px 0;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.articleView .articleMain .articleContent{
+    margin-bottom: 100px; 
+}
+
+.articleView .articleMain .articleMenu .delete_btn{
+    color: #007bff;
+}
+
+/* .articleView .articleCommentView .articleComment .commentOne[data-indent='2']{
+    color: red;
+} */
+
+.comment_reply{
+    margin-left: 20px;
+}
+.articleCommentView .articleComment .commentOneBox{
+    margin-top: 13px;
+    border-radius: 6px;
+}
+/* .comment::before{
+    content: "!test ";
+} */
+.comment span{
+    margin-left: 5px;
+}
+
+@media screen and (max-width: 991px) {
+    .articleView{
+        width: 100%;
+    }
+    
+    .articleHead .articleInfo div:nth-child(1){
+        margin-left: 20%; 
+    }
+    
+    .articleHead .articleInfo div:nth-child(2){
+        margin-left: 10%; 
+    }
+    
+    .articleHead .articleInfo div:nth-child(3){
+        margin-left: 10%; 
+    }
+    
+    .articleMain{
+        width: 90%;
+    }
+
+    .articleMenu{
+        margin-left: auto;
+    }
+
+}

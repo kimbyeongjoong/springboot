@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      lang="ko"
+>
+<head>
+    <title>library-program</title>
+    <meta charset="utf-8" />
+    <link th:replace="common/common :: css">
+    <style type="text/css">
+        .my-paging-center {
+            margin-left: 40%;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>admin page</h1>
+        <a th:if="${session}" class="btn btn-outline-secondary btn-sm" href="./login">로그인</a>
+        <a class="btn btn-outline-secondary btn-sm" href="./join">회원가입</a>
+
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>이름</th>
+                <th onclick="location.href='board_view'">제목</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th>1001</th>
+                <th>홍길동</th>
+                <th>제목입니다.</th>
+            </tr>
+            <tr>
+                <th>1002</th>
+                <th>이순신</th>
+                <th>제목이라구요.</th>
+            </tr>
+            <tr>
+                <th>1003</th>
+                <th>관리자</th>
+                <th>제목이에요.</th>
+            </tr>
+            </tbody>
+        </table>
+
+        <hr/>
+        <a class="btn btn-info pull-right">글쓰기</a>
+        <!-- paging -->
+        <div class="my-paging-center">
+            <ul class="pagination">
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                <li class="page-item"><a class="page-link" href="#">5</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div>
+        <p th:text="${abcList}">DB connect test message</p>
+    </div>
+
+    <script th:replace="common/common :: js"></script>
+</body>
+</html>

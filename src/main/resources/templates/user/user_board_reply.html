@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>user_board_reply</title>
+    <link th:replace="common/common :: css">
+    <link rel="stylesheet" href="../static/css/summernote/summernote-lite.css">
+    <link rel="stylesheet" href="../static/css/myCss/myBoardWrite.css">
+</head>
+<body>
+    <header th:replace="common/navtop :: navtop" ></header>
+    <div class="article_write">
+        <p class="write_title">답글쓰기</p>
+        <form method="POST" action="write_reply_do" name="user_board" class="reg_form" enctype="multipart/form-data">
+            <input type="hidden" name="board_num" id="board_num">
+            <input type="hidden" name="origin_no" id="origin_no">
+            <input th:value="${session.member.user_id}" type="text" name="writer" class="form-control col-1 writer" readonly>
+            <label for="title">&nbsp제목:</label>
+            <input type="text" name="title" id="title" class="board_title form-control col-6" th:value="|└ 답변 : ${board.title}|" required>
+            <textarea id="summernote" name="content" required></textarea>
+            <input type="button" onclick="replySubmit()" class="btn btn-outline-success submit_btn" value="작성완료">
+        </form>
+        <a href="user_board" class="btn btn-outline-primary">목록</a>
+    </div>
+
+    <script th:replace="common/common :: js"></script>
+    <script type="text/javascript" src="../static/js/summernote/summernote-lite.js"></script>
+    <script type="text/javascript" src="../static/js/summernote/lang/summernote-ko-KR.js"></script>
+    <script type="text/javascript" src="../static/js/myJs/myBoardWrite.js"></script>
+    <script th:inline="javascript">
+
+        function replySubmit(){
+            /* <!CDATA[ */
+            let board_num = /*[[${board.board_num}]]*/ "";
+            let origin_no = /*[[${board.origin_no}]]*/ "";
+            /* ]]> */
+            document.getElementById('board_num').value = board_num;
+            document.getElementById('origin_no').value = origin_no;
+            user_board.submit();
+        }
+    </script>
+</body>
+</html>

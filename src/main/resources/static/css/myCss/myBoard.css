@@ -1,0 +1,62 @@
+body { 
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:14px;
+}
+
+.board_div{
+    width: 80%; 
+    height: auto;
+    margin: auto;
+    font-size: 14px;
+}
+
+.board_div p{
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.myTable thead tr{
+    text-align: center;
+}
+.myTable thead tr th:nth-child(3){
+    width: 40%;
+}
+
+.myTable tbody tr{
+    text-align: center;
+}
+.myTable tbody tr th:nth-child(3){
+    width: 40%;
+    text-align: left;
+}
+
+.myTable tbody tr th:nth-child(1){
+    text-align: center;
+}
+
+.myTable tbody tr .title{
+    text-decoration: none;
+    color: black;
+}
+
+.board_div .articlePaging{
+    position: relative;
+    left: 45%;
+}
+
+.board_div .articlePaging .staticPage{
+    letter-spacing: 0px;
+}
+
+@media screen and (max-width: 1058px) {
+    .board_div {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      width: 100%;
+      font-size: 16px;
+    }
+    .myTable thead tr{
+        display: none;
+    }
+
+}

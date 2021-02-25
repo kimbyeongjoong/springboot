@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>메일 발송</title>
+    <link th:replace="common/common :: css">
+</head>
+<body>
+    <h1>메일 발송</h1>
+
+    <form th:action="@{/mail}" method="post">
+        <input name="address" placeholder="이메일 주소" value="qudwnd2@naver.com"> <br>
+        <input name="title" placeholder="제목" value="메일보내기 테스트"> <br>
+        <textarea name="message" placeholder="메일 내용을 입력해주세요." cols="60" rows="20"></textarea>
+        <button>발송</button>
+    </form>
+
+    <h2>메일인증 테스트</h2>
+    <form th:action="@{/mail}" method="post">
+        <input name="address" placeholder="이메일 주소" value="qudwnd2@naver.com"> <br>
+        <input name="title" placeholder="제목" value="메일 인증 테스트"> <br>
+        <textarea name="message" placeholder="메일 내용을 입력해주세요." cols="60" rows="20"></textarea>
+        <button>발송</button>
+    </form>
+
+    <script th:replace="common/common :: js"></script>
+</body>
+</html>

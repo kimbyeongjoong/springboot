@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html 
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+<head>
+    <title>library-program</title>
+    <meta charset="utf-8" />
+    <link th:replace="common/common :: css">
+    <style type="text/css">
+        body{
+            background-image: url('static/images/startup-593327_1920.jpg');
+        }
+        .my-paging-center {
+            margin-left: 40%;
+        }
+        .container{
+            /* 255, 255, 255는 8비트(256) 색상값 0~255까지와 0.75는 투명도 75%를 의미 합니다.
+            투명도는 0~1.0까지 존재 합니다. */
+            background-color: rgba(0, 0, 0, 0.8); 
+            color: #fff;
+            margin-top: 100px;
+            padding:200px 0;  
+            text-align: center;
+        }
+        /* h1 {
+            color: #fd79a8;
+        }
+        .clicked {
+            color: #a29bfe;
+        } */
+    </style>
+</head>
+<body>
+    <!-- <img src="static/images/startup-593327_1920.jpg" class="background"> -->
+    <div class="container">
+        <h1 id="title">index page</h1>
+        <div sec:authorize="isAnonymous()">
+            <a href="./login" class="btn btn-outline-secondary btn-sm">로그인</a>
+            <a href="./user_join" class="btn btn-outline-secondary btn-sm">회원가입</a>
+            <a href="./mail_send" class="btn btn-outline-secondary btn-sm">메일보내기</a>
+        </div>
+        <div sec:authorize="isAuthenticated()" >
+            <a href="./logout" class="btn btn-outline-secondary btn-sm">로그아웃</a>
+        </div>
+
+        <div th:if="${session.member != null}">
+            <p th:text="|${session.member.user_id}님 안녕하세요.|"></p>
+        </div>
+        <div th:if="${session.member == null}">
+            <p>로그인 해주세요.</p>
+        </div>
+        <span sec:authorize="hasRole('ROLE_USER')">
+                <p>hasRole('ROLE_USER')</p>
+        </span>
+
+        <hr/>
+        <a class="btn btn-info pull-right" href="user/user_board">게시판으로</a>
+        <!-- paging -->
+        <!-- <div class="my-paging-center">
+            <ul class="pagination">
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                <li class="page-item"><a class="page-link" href="#">5</a></li>
+            </ul>
+        </div> -->
+    </div>
+
+    <div>
+        <p th:text="${abcList}">DB connect test message</p>
+    </div>
+
+    <script th:replace="common/common :: js"></script>
+    <script>
+        // const title = document.querySelector("#title");
+        // const CLICKED_CLASS = "clicked" 
+        // function handleClick(){
+        //     const currentClass = title.className; 
+        //     //class값을 자바스크립트에서 가져오기위해서는 className을 쓴다. class자체가 중요한 표현이라 단독으로 사용못함 
+        //     if(currentClass !== CLICKED_CLASS){
+        //         title.className = CLICKED_CLASS; 
+        //     } else {
+        //         title.className = ''; 
+        //     }
+        // };
+
+        // function init(){
+        //     addEventListener("click", handleClick);
+        // };
+        // //click이라는 이벤트가 실행될때마다 handleClick함수가 작동한다. 함수 뒤에 ()를 붙이면 이 함수를 당장 실행하라는 의미기때문에 괄호를 쓰지않는다.
+        // init();
+    </script>
+</body>
+</html>
+

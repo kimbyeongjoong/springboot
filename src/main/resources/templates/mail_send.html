@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>메일 발송</title>
+    <link th:replace="common/common :: css">
+    <style type="css/text">
+        h1{
+            color: blueviolet;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>메일 발송</h1>
+        <div class="div1">
+            <form th:action="@{/mail}" method="post">
+                <input name="address" placeholder="이메일 주소" value="qudwnd2@naver.com"> <br>
+                <input name="title" placeholder="제목" value="메일보내기 테스트"> <br>
+                <textarea name="message" placeholder="메일 내용을 입력해주세요." cols="60" rows="20"></textarea>
+                <button>발송</button>
+            </form>
+        </div>
+        <div class="div1">
+            <h2>메일인증 테스트</h2>
+            <form action="#" method="post" id="authority_mail">
+                <input name="address" placeholder="이메일 주소" value="qudwnd2@naver.com"><br>
+                <input name="title" placeholder="제목" value="메일 인증 테스트"><br>
+                <textarea name="message" placeholder="메일 내용을 입력해주세요." cols="60" rows="20"></textarea>
+                <button type="button" onclick="authorize()">발송</button>
+            </form>
+        </div>
+    </div>
+
+    <script th:replace="common/common :: js"></script>
+    <script>
+        // controller에 객체 전달하고 문자열 추가해서 갔다오기
+        function authorize() {
+            let mail_form = $('#authority_mail').serialize();
+            console.log(mail_form);
+
+            let promise = $.ajax({ 
+                url: "./joinConfirm",
+                dataType: "json", 
+                type: "post", 
+                data: mail_form
+            });
+            promise.done(successFunction);
+            promise.fail(failFunction);
+        }
+        function successFunction(data){
+            if(data === "success")
+                let a = "함수호출 success";
+            return alert("successFunction : " + a + ", " + data.title);
+        }
+        function failFunction(data){
+            if(data != "success")
+                let a = "함수호출 fail";
+            return alert("failFunction : " + a + ", " + data);
+        }
+    </script>
+</body>
+</html>
+
+
+<!-- function authorize() {
+    let search_var; 
+    let mail_form = $('#authority_mail').serialize();
+    console.log(mail_form);
+    $.ajax({ 
+        url: "./joinConfirm",
+        dataType: "json", 
+        type: "post", 
+        data: mail_form,
+        success: function(data) {     
+            search_var = data;
+            alert(mail_form);
+        }, 
+        error: function(request, status, error) { 
+            alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        } 
+    }); 
+
+    return search_var; 
+} -->

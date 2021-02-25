@@ -1,0 +1,23 @@
+.article_write{
+    width: 80%; 
+    margin: auto; 
+    margin-top: 10px;
+}
+.write_title{
+    font-size: 24px; 
+    font-weight: bold;
+}
+.reg_form{
+    margin-bottom: 30px;
+}
+.reg_form .writer{
+    text-align: center;
+    display: inline-block;
+}
+.board_title{
+    display: inline-block;
+}
+.submit_btn{
+    margin-top: 30px;
+    float: right;
+}

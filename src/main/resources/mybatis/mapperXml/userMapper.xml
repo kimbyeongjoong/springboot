@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.libms.mapper.UserMapper">
+
+    <select id="selectUser" resultType="User_infoVo">
+        select
+            *
+        from
+            user_info_tbl
+    </select>
+
+<!--    게시물 리스트 출력-->
+    <select id="selectUserBoard" parameterType="BoardParameterVo" resultType="User_boardVo">
+        select
+            ub.board_num,
+            ub.title,
+            ub.content,
+            ub.writer,
+            ub.hits,
+            ub.reg_datetime,
+            ubc.category_name as category
+        from
+            user_board_TBL as ub
+        join
+            user_board_category_tbl as ubc
+        on
+            ubc.category_no = ub.category
+        where
+            title like '%${search_word}%'
+        order by
+            origin_no desc, reg_datetime asc
+        limit
+            #{offset}, #{limit}
+    </select>
+
+<!--    게시물 작성-->
+    <insert id="userBoardWrite" parameterType="User_boardVo">
+        insert into
+            user_board_TBL(
+                title,
+                content,
+                writer,
+                user_ip,
+                category
+            )
+        values(
+            #{title},
+            #{content},
+            #{writer},
+            inet_aton(#{user_ip}),
+            #{category}
+        )
+    </insert>
+
+<!--    게시물 보기-->
+    <select id="boardView" parameterType="int" resultType="User_boardVo">
+        select
+            board_num,
+            title,
+            content,
+            writer,
+            reg_datetime,
+            update_datetime,
+            category,
+            origin_no
+        from
+            user_board_TBL
+        where
+            board_num = #{board_num}
+    </select>
+
+<!--    '게시물 작성 페이지' 와 '게시물 수정 페이지' 에서 카테고리 리스트를 출력하기 위해 만든 쿼리-->
+    <select id="categorySelect" resultType="Board_categoryVo">
+        select
+            *
+        from
+            user_board_category_tbl
+    </select>
+
+<!--    조회수 증가-->
+    <update id="upHits" parameterType="int">
+        update
+            user_board_tbl
+        set
+            hits = hits + 1
+        where
+            board_num = #{board_num}
+    </update>
+
+<!--    게시물 수정-->
+    <update id="userBoardModifyDo" parameterType="User_boardVo">
+        update
+            user_board_tbl
+        set
+            title = #{title},
+            content = #{content},
+            update_datetime = CURRENT_TIMESTAMP,
+            category = #{category}
+        where
+            board_num = #{board_num}
+    </update>
+
+<!--    게시물 삭제-->
+    <delete id="userBoardDelete" parameterType="int">
+        delete from
+            user_board_tbl
+        where
+            board_num = #{board_num}
+    </delete>
+
+<!--    <insert id="userJoin" parameterType="User_infoVo">-->
+<!--        insert into-->
+<!--            user_info_tbl-->
+<!--        values(-->
+<!--            #{user_id},-->
+<!--            #{password},-->
+<!--            #{user_name},-->
+<!--            #{user_tel},-->
+<!--            #{user_email},-->
+<!--            #{post_number},-->
+<!--            #{address1},-->
+<!--            #{address2},-->
+<!--            default,-->
+<!--            #{user_birth},-->
+<!--            #{role}-->
+<!--        )-->
+<!--    </insert>-->
+
+
+<!--    <insert id="insertUserTel" parameterType="User_telVo">-->
+<!--        insert into-->
+<!--            user_tel_tbl-->
+<!--        values (-->
+<!--            #{user_tel},-->
+<!--            #{sns_agree}-->
+<!--        )-->
+<!--    </insert>-->
+
+
+<!--    <insert id="insertUserEmail" parameterType="User_emailVo">-->
+<!--        insert into-->
+<!--            user_email_tbl-->
+<!--        values (-->
+<!--            #{user_email},-->
+<!--            #{email_agree}-->
+<!--        )-->
+<!--    </insert>-->
+
+<!--    getSalt 쿼리로 확인한 비밀번호와 아이디 입력이 맞는지 확인하는 쿼리-->
+<!--    유저 정보를 가져오는 역할도 한다-->
+    <select id="authenticate" parameterType="LoginForm" resultType="User_infoVo">
+        select
+            *
+        from
+            user_info_tbl
+        where
+            user_id = #{user_id} AND password = #{password}
+    </select>
+
+<!--    로그인 할 때 입력받은 비밀번호에 해당 유저의 salt를 이용해서 비밀번호가 같은지 확인한다-->
+    <select id="getSalt" parameterType="LoginForm" resultType="String">
+        select
+            salt
+        from
+            user_info_tbl
+        where
+            user_id = #{user_id}
+    </select>
+
+<!--    게시물 삭제를 위한 작성자 아이디 찾기-->
+    <select id="writerFindFromBoard" parameterType="int" resultType="String">
+        select
+            writer
+        from
+            user_board_TBL
+        where
+            board_num = #{board_num}
+    </select>
+
+<!--    origin_no 업데이트를 위한 board_num 찾기-->
+    <select id="findBoardNum" resultType="Integer">
+        select
+            max(board_num)
+        from
+            user_board_tbl
+    </select>
+
+<!--    origin_no 업데이트-->
+    <update id="equalsOriginNo" parameterType="int">
+        update
+            user_board_tbl
+        set
+            origin_no = board_num
+        where
+            board_num = #{board_num}
+    </update>
+
+<!--    그룹 오더 업데이트, 이 쿼리를 먼저 날리고 답글 작성 쿼리를 날려야한다-->
+    <update id="groupUpdate" parameterType="int">
+        update
+            user_board_TBL
+        set
+            group_ord = group_ord + 1
+        where
+            origin_no = #{origin_no} and group_ord > 0
+    </update>
+
+<!--    답글 작성-->
+    <insert id="writeReply" parameterType="User_boardVo">
+        insert into
+            user_board_TBL(
+                title,
+                content,
+                writer,
+                category,
+                origin_no,
+                group_ord,
+                indent,
+                user_ip
+            )
+        select
+            concat("@", writer, " ", #{title}),
+            #{content},
+            #{writer},
+            category,
+            origin_no,
+            group_ord + 1,
+            indent + 1,
+            inet_aton(#{user_ip})
+        from
+            user_board_TBL
+        where
+            board_num = #{board_num}
+    </insert>
+
+<!--    페이징 처리를 위한 게시물 갯수 확인-->
+    <select id="listCount" resultType="int">
+        select
+            count(*)
+        from
+            user_board_tbl
+    </select>
+
+<!--    댓글 리스트 출력-->
+    <select id="userCommentView" parameterType="int" resultType="User_commentVo">
+        select
+            comment_num,
+            content,
+            writer,
+            reg_datetime,
+            comment_origin_no,
+            indent
+        from
+            board_comment_tbl
+        where
+            board_num = #{board_num}
+        order by
+            comment_origin_no asc, reg_datetime asc
+<!--        limit #{offset}, #{limit}-->
+    </select>
+
+<!--    댓글 작성-->
+    <insert id="userCommentWrite" parameterType="User_commentVo">
+        insert into
+            board_comment_tbl(
+                board_num,
+                content,
+                writer,
+                origin_no,
+                group_ord,
+                indent,
+                user_ip
+            )
+        select
+            board_num,
+            #{content},
+            #{writer},
+            origin_no,
+            group_ord + 1,
+            indent + 1,
+            inet_aton(#{user_ip})
+        from
+            user_board_TBL
+        where
+            board_num = #{board_num}
+    </insert>
+
+<!--    대댓글 작성-->
+    <insert id="userCommentWrite2" parameterType="User_commentVo">
+        insert into
+            board_comment_tbl(
+                board_num,
+                content,
+                writer,
+                comment_origin_no,
+                origin_no,
+                group_ord,
+                indent,
+                user_ip
+            )
+        select
+            board_num,
+            concat("@", writer, " ", #{content}),
+            #{writer},
+            comment_origin_no,
+            origin_no,
+            group_ord + 1,
+            indent + 1,
+            inet_aton(#{user_ip})
+        from
+            board_comment_tbl
+        where
+            comment_num = #{comment_num}
+    </insert>
+
+<!--    댓글 삭제-->
+    <delete id="commentDelete" parameterType="int">
+        delete from
+            board_comment_tbl
+        where
+            comment_num = #{comment_num}
+    </delete>
+
+    <!--    comment_origin_no 업데이트를 위한 comment_num 찾기-->
+    <select id="findCommentNum" resultType="Integer">
+        select
+            max(comment_num)
+        from
+            board_comment_tbl
+    </select>
+
+    <!--    comment_origin_no 업데이트-->
+    <update id="equalsCommentOriginNo" parameterType="int">
+        update
+            board_comment_tbl
+        set
+            comment_origin_no = comment_num
+        where
+            comment_num = #{comment_num}
+    </update>
+
+    <!--    그룹 오더 업데이트, 이 쿼리를 먼저 날리고 대댓글 작성 쿼리를 날려야한다-->
+    <update id="commentGroupUpdate" parameterType="int">
+        update
+            board_comment_tbl
+        set
+            group_ord = group_ord + 1
+        where
+            comment_origin_no = #{comment_origin_no} and group_ord > 0
+    </update>
+
+
+
+</mapper>

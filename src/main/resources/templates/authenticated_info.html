@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>authenticated_information page</title>
+    <link th:replace="common/common :: css">
+        
+</head>
+<body>
+<h1>authenticated_information page</h1>
+<div th:if="${session.sessionTest == 'Y'}">
+    <p>there are session</p>
+</div>
+<div th:if="${session.sessionTest != 'Y'}">
+    <p>there aren't session</p>
+</div>
+    <div sec:authorize="isAuthenticated()">
+        Name: <span sec:authentication="name">SomeName</span><br />
+        Principal: <span sec:authentication="principal">PrincipalString</span><br />
+        Principal.user_id: <span sec:authentication="principal.user_id">Email</span><br />
+        HasRole(USER): <span sec:authorize="hasRole('ROLE_USER')">YES</span><br />
+        HasRole(ADMIN): <span sec:authorize="hasRole('ROLE_ADMIN')">YES</span>
+    </div>
+    <form action="#" th:action="@{/logout}" method="post">
+        <input type="submit" value="Logout" />
+        <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+    </form>
+    <a href="/">메인으로</a>
+
+<script th:replace="common/common :: js"></script> 
+</body>
+</html>

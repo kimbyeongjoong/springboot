@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>user_join</title>
+    <link th:replace="common/common :: css">
+    <link rel="stylesheet" href="static/css/myCss/user_join.css">
+</head>
+<body>
+
+    <!-- <header th:replace="common/navtop :: navtop" ></header> -->
+    <div class="container">
+        <h1>회원가입</h1>
+        <form action="user_join_do" method="post" name="join">
+            <table summary="이름, 아이디, 비밀번호, 비밀번호 확인, 이메일, 이메일수신여부, 주소, 휴대폰, 유선전화, 생년월일 순으로 회원가입 정보를 등록할수 있습니다." class="table">
+                <tbody>
+                    <tr>
+                        <th scope="row"><span>아이디</span></th>
+                        <td>
+                            <ul class="pta">
+                                <li class="r10">
+                                    <input type="text" class="form-control inputWrite" id="id" name="user_id" value="tester00">
+                                </li>
+                                <li class="inputLi">
+                                    <input type="hidden" name="idDuplicateCheck" id="idDuplicateCheck" value="false">
+                                    <!-- <button type="button" onclick="DuplicateCheck()" class="btn btn-outline-primary btn-sm">중복확인</button> -->
+                                </li>
+                                <li class="pt5">
+                                    <span class="mvalign">첫 글자는 영문으로 4~16자 까지 가능, 영문, 숫자와 특수기호(_)만 사용 가능</span>
+                                    <span class="mvalign idDup">사용할 수 없는 아이디 입니다.</span>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><span>비밀번호</span></th>
+                        <td>
+                            <ul class="pta">
+                                <li class="r10">
+                                    <input type="password" class="form-control inputWrite" name="password" value="123">
+                                </li>
+                                <li><span class="mvalign">※ 영문 대소문자 한글자씩 포함 / 숫자, 특수문자 혼용으로 8~16자 까지 가능.</span></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><span>비밀번호 확인</span></th>
+                        <td>
+                            <ul class="pta">
+                                <li class="r10">
+                                    <input type="password" class="form-control inputWrite" name="pw2" value="123"/>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><span>이름</span></th>
+                        <td>
+                            <ul class="pta">
+                                <li class="r10">
+                                    <input type="text" class="form-control inputWrite" name="user_name"  value="이름">
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><span>이메일</span></th>
+                        <td>
+                            <ul class="pta">
+                                <li class="inputLi">
+                                    <!-- <input type="text" class="form-control inputWrite" id="email1" name="email1" value="qudwnd2"> -->
+                                    <input type="text" class="form-control inputWrite" id="email1" name="email1" value="test1">
+                                    <span class="valign">@</span>
+                                    <!-- <input type="text" class="form-control inputWrite" id="email2" name="email2" value="naver.com"> -->
+                                    <input type="text" class="form-control inputWrite" id="email2" name="email2" value="test.com">
+                                    <select id="emailList" class="form-control inputWrite">
+                                        <option selected="selected">직접입력</option>
+                                        <option value="naver.com">naver.com</option>
+                                        <option value="daum.net">daum.net</option>
+                                        <option value="hanmail.net">hanmail.net</option>
+                                        <option value="gmail.com">gmail.com</option>
+                                    </select>
+                                    <span class="noticeWord">*(필수)
+                                        <button type="button" id="modalOpen"  class="btn btn-outline-primary btn-sm">이메일 인증</button>
+                                    </span>
+                                </li>
+                                <li class="cb pt5"><span class="mvalign">※ 이메일 수신여부 동의하십니까?</span></li>
+                                <li class="pt5">
+                                    <ul>
+                                        <li>
+                                            <input type="radio" name="email_agree" id="receive_yes" class="form-check-input" checked="checked" value="email_yes"/>
+                                            <label for="receive_yes">예</label>
+                                        </li>
+                                        <li>    
+                                            <input type="radio" name="email_agree" id="receive_no" class="form-check-input" value="email_no"/>
+                                            <label for="receive_no">아니오</label>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </td>
+                        <!-- 모달창 -->
+                        <div class="modal hidden">
+                            <div class="md_overlay">
+                                <div class="md_content">
+                                    <h3>이메일 인증</h3>
+                                    <p class="modal_text">
+                                        입력하신 이메일에 인증번호를 보냈습니다 확인 후 여기에 입력해주세요.
+                                    </p>
+                                    <p class="modal_text">
+                                        발송에는 시간이 걸릴 수 있습니다.
+                                    </p>
+                                    <!-- (이메일 인증을 누르면 입력한 메일로 인증번호를 보내고 그것을 여기에 입력하면 인증완료. 메일일 뿐이지 휴대폰 인증과 비슷하다)
+                                        인증번호는 이메일 인증을 누른 시점에 만들것인지 가입창에 들어온 시점에 만들것인지 생각해둘것 -->
+                                    <input type="text" class="form-control" id="authKeyTemp" name="authKey"><br>
+                                    <!-- authKey라는 인풋 네임이 새로 생겼을 뿐이다. vo에 authKey를 추가하고 가입 controller에 setAuthkey() 집어넣자. -->
+                                    <button type="button">확인</button>
+                                </div>
+                            </div>
+                        </div>
+                    </tr>
+                    <tr>
+                        <th scope="row"><span>주소</span></th>
+                        <td>
+                            <ul class="pta">
+                                <li class="inputLi">
+                                    <input type="text" id="sample4_postcode" class="form-control addressType" name="post_number" value="123-456">&nbsp;
+                                    <button type="button" onclick="sample4_execDaumPostcode()" class="btn btn-outline-primary btn-sm">우편번호 찾기
+                                </li>
+                                <li class="pt5">
+                                    <input type="text" class="form-control addressType" id="sample4_roadAddress" name="address1" value="주소1"/>
+                                    <input type="text" class="form-control addressTypeDetail" id="sample4_detailAddress" name="address2" value="주소2"/>
+                                </li>
+                                <div id="layer">
+                                    <img src="//i1.daumcdn.net/localimg/localimages/07/postcode/320/close.png" 
+                                        id="btnCloseLayer" onclick="closeDaumPostcode()" alt="닫기 버튼">
+                                </div>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><span>휴대폰</span></th>
+                        <td>
+                            <ul class="pta">
+                                <li class="inputLi">
+                                    <select name="phone1" class="form-control inputWrite">
+                                        <option value="010" selected="selected">010</option>
+                                        <option value="011">011</option>
+                                        <option value="016">016</option>
+                                        <option value="017">017</option>
+                                        <option value="018">018</option>
+                                        <option value="019">019</option>
+                                    </select>
+                                    <span class="valign">─</span>
+                                    <input type="text" class="form-control inputWrite" maxlength="4" name="phone2" value="4321"/>
+                                    <span class="valign">─</span>
+                                    <input type="text" class="form-control inputWrite" maxlength="4" name="phone3" value="1234"/>
+                                </li>
+                                <li class="cb pt5"><span class="mvalign">※ SMS 수신여부 동의하십니까?</span></li>
+                                <li class="pt5">
+                                    <ul>
+                                        <li>
+                                            <input type="radio" name="sms_agree" id="sms_yes" class="form-check-input" checked="checked" value="sms_yes"/>
+                                            <label for="sms_yes">예</label>
+                                        </li>
+                                        <li>
+                                            <input type="radio" name="sms_agree" id="sms_no" class="form-check-input" value="sms_no"/>
+                                            <label for="sms_no">아니오</label>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><span>생년월일</span></th>
+                        <td>
+                            <ul class="pta">
+                                <li class="inputLi">
+                                    <select name="birth1" class="form-control inputWrite">
+                                        <option value='none' selected="selected">선택하세요</option>
+                                        <script type="text/javascript">
+                                        //<![CDATA[
+                                            for(var i=1940; i<=2020; i++){
+                                                document.write("<option value='"+ i +"'>" + i + "년"+ "</option>");	
+                                            };
+                                        //]]>
+                                        </script>
+                                    </select>
+                                    <select name="birth2" class="form-control inputWrite">
+                                        <option value='none' selected="selected">선택하세요</option>
+                                        <script type="text/javascript">
+                                        //<![CDATA[
+                                            for(var i=1; i<=12; i++){
+                                                if(i<10){
+                                                    document.write("<option value='"+ i +"'>0" + i + "월"+"</option>");
+                                                }else{
+                                                    document.write("<option value='"+ i +"'>" + i + "월"+ "</option>");
+                                                };
+                                            };
+                                        //]]>
+                                        </script>
+                                    </select>
+                                    <select name="birth3" class="form-control inputWrite">
+                                        <option value='none' selected="selected">선택하세요</option>
+                                        <script type="text/javascript">
+                                        //<![CDATA[
+                                            for(var i=1; i<=31; i++){
+                                                if(i<10){
+                                                    document.write("<option value='"+ i +"'>0" + i + "일"+"</option>");
+                                                }else{
+                                                    document.write("<option value='"+ i +"'>" + i + "일"+ "</option>");
+                                                };
+                                            };
+                                        //]]>
+                                        </script>
+                                    </select>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <input type="submit" class="btn btn-outline-success submitButton" value="가입">
+            <a href="/" class="btn btn-primary">메인으로</a>
+        </form>
+    </div>
+
+    <script th:replace="common/common :: js"></script>
+    <script type="text/javascript" src="static/js/myJs/user_join.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        // 다른 라이브러리, 다른 버전의 jQuery와 충돌 방지하기
+        let $j = jQuery.noConflict();
+        //필요한 엘리먼트들을 선택한다.
+        const openButton = document.getElementById("modalOpen");
+        const modal = document.querySelector(".modal");
+        const overlay = modal.querySelector(".md_overlay");
+        const closeButton = modal.querySelector("button");
+        //동작함수
+        const openModal = () => {
+            emailDuplicateCheck();
+        }
+        const closeModal = () => {
+            modal.classList.add("hidden");
+        }
+        //클릭 이벤트
+        openButton.addEventListener("click", openModal);
+        closeButton.addEventListener("click", closeModal);
+
+        //아이디 중복 체크
+        $j("#id").keyup(function() {
+             let inputId = document.getElementById('id').value;
+             $j.ajax({
+                     type : 'post',
+                     url : './idDuplicateCheck',
+                     dataType : 'text',
+                     data : {id : inputId},
+                     success : function(data){
+                         if(data === "success"){
+                             $j('#idDuplicateCheck').val("true");
+                             $j('.idDup').css('display', 'none');
+                         }else if(data === "duplicate"){
+                             $j('#idDuplicateCheck').val("false");
+                             $j('.idDup').css('display', 'block');
+                         }
+                     },
+                     error:function(request, status, error){
+                         alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                     }
+             });
+        });
+
+        //메일 중복 체크
+        function emailDuplicateCheck(){
+            let emailAuth = new Promise(function(resolve, reject){
+                let email1 = document.getElementById('email1').value;
+                let email2 = document.getElementById('email2').value;
+                let email = email1 + "@" + email2;
+                $j.ajax({
+                    type : 'post',
+                    url : './emailDuplicateCheck',
+                    dataType : 'text',
+                    data : {user_email : email},
+                    success : function(data){
+                        if(data === "success"){
+                            console.log(data)
+                            resolve(data);
+                        }else if(data === "duplicate"){
+                            alert('중복된 메일 입니다.');
+                        }
+                    },
+                    error:function(request, status, error){
+                        alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                    }
+                });
+            });
+            emailAuth.then(function(resolvedData){
+                console.log('resolvedData = ' + resolvedData);
+                if(resolvedData === "success"){
+                    modal.classList.remove("hidden");
+                    emailAuthenticate();
+                }
+            });
+        }
+        
+        //이메일 인증번호 보내기
+        function emailAuthenticate(){
+            let email1 = $j("#email1").val();
+            let email2 = $j("#email2").val();
+            let email = email1 + "@" + email2;
+            $j.ajax({
+                    type : 'post',
+                    url : './sendAuthMail',
+                    dataType : 'text',
+                    data : {email : email},
+                    success : function(data){
+                        alert("success");
+                    },
+                    error:function(request, status, error){
+                        alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                    }
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+<!-- 아이디 중복체크 그냥 펑션일때
+function DuplicateCheck(){
+    let inputId = document.getElementById('id').value;
+    $j.ajax({
+            type : 'post',
+            url : './idDuplicateCheck',
+            dataType : 'text',
+            data : {id : inputId},
+            success : function(data){
+                if(data === "success"){
+                    $j('#idDuplicateCheck').val("true");
+                    $j('.idDup').css('display', 'block');
+                    alert('사용할 수 있는 아이디 입니다.');
+                }else if(data === "duplicate"){
+                    $j('#idDuplicateCheck').val("false");
+                    $j('.idDup').css('display', 'none');
+                    alert('중복된 아이디 입니다.');
+                }
+            },
+            error:function(request, status, error){
+                alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            }
+    });
+} -->
