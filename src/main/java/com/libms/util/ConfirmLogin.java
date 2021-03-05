@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 public class ConfirmLogin {
 
     // 로그인 되어있지 않을 경우
-    public boolean ConfirmLogin0(
+    public boolean ConfirmLoginExpired(
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
 
@@ -21,11 +21,10 @@ public class ConfirmLogin {
         try{
             User_infoVo info = (User_infoVo) session.getAttribute("member");
             if (info == null) {
-                System.out.println("info.getUser_id() = " + info.getUser_id());
                 response.setContentType("text/html; charset=UTF-8");
                 PrintWriter out = response.getWriter();
                 out.print("<script>");
-                out.print("alert('로그인 해주세요.\\n또는 올바르지 않은 접근입니다.');");
+                out.print("alert('세션이 만료되었습니다.');");
                 out.print("location.href = '../login';");
                 out.print("</script>");
                 out.flush();
@@ -57,8 +56,6 @@ public class ConfirmLogin {
             if(info.getRole().equals("ROLE_ADMIN"))
                 return true;
             if (!(info.getUser_id().equals(writer))) {
-                System.out.println("info.getUser_id() = " + info.getUser_id());
-                System.out.println("writer = " + writer);
                 response.setContentType("text/html; charset=UTF-8");
                 PrintWriter out = response.getWriter();
                 out.print("<script>");

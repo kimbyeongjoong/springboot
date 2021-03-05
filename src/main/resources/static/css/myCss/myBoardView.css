@@ -46,7 +46,9 @@
 }
 
 .articleView .articleMain .articleContent{
-    margin-bottom: 100px; 
+    margin:auto;
+    margin-bottom: 100px;
+    width: 100%;
 }
 
 .articleView .articleMain .articleMenu .delete_btn{
@@ -58,7 +60,7 @@
 } */
 
 .comment_reply{
-    margin-left: 20px;
+    margin-left: 30px;
 }
 .articleCommentView .articleComment .commentOneBox{
     margin-top: 13px;
@@ -69,6 +71,14 @@
 } */
 .comment span{
     margin-left: 5px;
+}
+
+#commentWriteDiv{
+    margin-top: 20px;
+}
+#commentWriteDiv a{
+    margin-top:-15px;
+    float: right;
 }
 
 @media screen and (max-width: 991px) {
@@ -89,7 +99,7 @@
     }
     
     .articleMain{
-        width: 90%;
+        width: 100%;
     }
 
     .articleMenu{

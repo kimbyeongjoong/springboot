@@ -4,20 +4,27 @@
     <meta charset="UTF-8">
     <title>Login page</title>
     <link th:replace="common/common :: css">
-        
+    <link rel="stylesheet" href="static/css/myCss/myLogin.css">
+    <style type="text/css">
+        body{
+            background-image: url('static/images/startup-593327_1920.jpg');
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Login page</h1>
-        <p th:if="${loginError}" class="error text-danger">Wrong user or password</p>
-        <form th:action="@{/authenticate}" method="post" th:object="${loginForm}">
-            <!-- <label for="user_id">ID</label>: -->
-            <input type="text" id="user_id" th:field="*{user_id}" autofocus placeholder="ID"/> <br />
-            <!-- <label for="password">Password</label>: -->
-            <input type="password" id="password" th:field="*{password}" placeholder="PASSWORD"/> <br />
-            <input type="submit" value="Log in" />
-            <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
-        </form>
+        <div class="articleLogin">
+            <h1 class="title">Login</h1>
+            <p th:if="${loginError}" class="error text-danger">Wrong user or password</p>
+            <form th:action="@{/authenticate}" method="post" th:object="${loginForm}" class="articleForm">
+                <!-- <label for="user_id">ID</label>: -->
+                <input type="text" id="user_id" th:field="*{user_id}" autofocus placeholder="ID"><br>
+                <!-- <label for="password">Password</label>: -->
+                <input type="password" id="password" th:field="*{password}" placeholder="PASSWORD"><br>
+                <input type="submit" value="Log in" class="btn btn-info pull-right loginBtn">
+                <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+            </form>
+        </div>
         <a href="/">메인으로</a>
     </div>
     <script th:replace="common/common :: js"></script> 

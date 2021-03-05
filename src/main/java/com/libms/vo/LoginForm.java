@@ -12,4 +12,5 @@ public class LoginForm {
     private String user_id;
     private String password;
     private String salt;
+    private String loginError;
 }

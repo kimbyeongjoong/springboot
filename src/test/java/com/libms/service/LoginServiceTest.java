@@ -36,6 +36,7 @@ class LoginServiceTest {
         md.update(salt.getBytes());
         md.update(input_pw.getBytes());
         String hex = String.format("%064x", new BigInteger(1, md.digest()));
+        // %064x에서 x는 16진수이고, 총 64자리의 16진수에서 값이 들어가지 못한 자리는 0으로 채워지게 됩니다.
 
         if(input_id.equals(info.getUser_id())){
 

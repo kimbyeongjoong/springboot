@@ -11,6 +11,7 @@ $j('#summernote').summernote({
     codeviewIframeFilter: true,
     callbacks: {	//여기 부분이 이미지를 첨부하는 부분
         onImageUpload : function(files) {
+            console.log('files = ' + files);
             uploadSummernoteImageFile(files[0],this);
         },
         onPaste: function (e) {
@@ -18,6 +19,7 @@ $j('#summernote').summernote({
             if (clipboardData && clipboardData.items && clipboardData.items.length) {
                 var item = clipboardData.items[0];
                 if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+                    console.log('e = ' + e);
                     e.preventDefault();
                 }
             }
@@ -33,7 +35,7 @@ function uploadSummernoteImageFile(file, editor) {
     console.log("file = " + file);
     console.log("editor = " + editor);
 
-    data = new FormData();
+    let data = new FormData();
     data.append("file", file);
 
     console.log("data = " + data);

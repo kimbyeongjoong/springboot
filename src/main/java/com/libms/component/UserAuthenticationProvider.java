@@ -36,15 +36,15 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
 //        String password = (String) authentication.getCredentials();
         LoginForm loginForm = new LoginForm();
 
-        // vo에 입력한 아이디와 비밀번호 할당
+        // vo에 입력된 아이디와 비밀번호 할당
         loginForm.setUser_id(authentication.getName());
         loginForm.setPassword((String) authentication.getCredentials());
 
-        // salt 값 추출
+        // salt 값 DB에서 가져오기
         loginForm.setSalt(userService.getSalt(loginForm));
 
         // 로그인 시도 and 계정 정보 가져오기(role 정보를 가져오기 위함)
-        User_infoVo user_infoVo = userService.authenticate(loginForm);
+        User_infoVo user_infoVo = userService.loginAuthenticate(loginForm);
 
         if(user_infoVo == null)
             throw new BadCredentialsException("Login Error");
@@ -61,9 +61,9 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
         logger.info("User_infoVo = " + user_infoVo);
 
         // 유저 session 생성
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        HttpSession session = request.getSession();
-        session.setAttribute("member", user_infoVo);
+//        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+//        HttpSession session = request.getSession();
+//        session.setAttribute("member", user_infoVo);
 
 //      return new UsernamePasswordAuthenticationToken(user_infoVo, null, authorities);
         return new UsernamePasswordAuthenticationToken(user_infoVo, user_infoVo.getPassword(), authorities);

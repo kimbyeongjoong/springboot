@@ -36,16 +36,25 @@
     <div class="container">
         <h1 id="title">index page</h1>
         <div sec:authorize="isAnonymous()">
-            <a href="./login" class="btn btn-outline-secondary btn-sm">로그인</a>
-            <a href="./user_join" class="btn btn-outline-secondary btn-sm">회원가입</a>
-            <a href="./mail_send" class="btn btn-outline-secondary btn-sm">메일보내기</a>
+            <a href="login" class="btn btn-outline-secondary btn-sm">로그인</a>
+            <a href="user_join" class="btn btn-outline-secondary btn-sm">회원가입</a>
+            <a href="mail_send" class="btn btn-outline-secondary btn-sm">메일보내기</a>
+            <a href="user_info/user_info" class="btn btn-outline-secondary btn-sm">회원정보</a>
         </div>
         <div sec:authorize="isAuthenticated()" >
-            <a href="./logout" class="btn btn-outline-secondary btn-sm">로그아웃</a>
+            <a href="user_join" class="btn btn-outline-secondary btn-sm">회원가입</a>
+            <a href="mail_send" class="btn btn-outline-secondary btn-sm">메일보내기(관리자 옵션)</a>
+            <a href="user_info/user_info" class="btn btn-outline-secondary btn-sm">회원정보</a>
+            <a href="logout" class="btn btn-outline-secondary btn-sm">로그아웃</a>
         </div>
-
+        내 생각이지만 a 태그로 로그아웃을 할때는 시큐리티 어댑터에서 csrf설정을 ignore해야할것같다.
         <div th:if="${session.member != null}">
-            <p th:text="|${session.member.user_id}님 안녕하세요.|"></p>
+            <!-- <span sec:authentication="principal.User_infoVo">
+                test
+            </span> -->
+            <span sec:authentication="principal.user_id"></span>
+            <span>님 안녕하세요.</span>
+            <p th:text="|당신의 이름 : ${session.member.principal.user_name}|"></p>
         </div>
         <div th:if="${session.member == null}">
             <p>로그인 해주세요.</p>

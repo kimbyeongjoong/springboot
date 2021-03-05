@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
 @EnableWebSecurity
@@ -20,23 +21,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         // 정적 자원에 대해서는 Security 설정을 적용하지 않음.
-        web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+        web
+                .ignoring()
+                .requestMatchers(PathRequest
+                        .toStaticResources()
+                        .atCommonLocations());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests()
-                .antMatchers("/about").authenticated()
+        http.authorizeRequests()
+                .antMatchers("/user_info/**").authenticated()
                 .antMatchers("/mail_send").hasRole("ADMIN") // 내부적으로 접두어 "ROLE_"가 붙는다.
                 .anyRequest().permitAll();
 
         http.formLogin()
                 .loginPage("/login") // default
-                .failureUrl("/login?error") // default
                 .loginProcessingUrl("/authenticate")
-                .defaultSuccessUrl("/user/user_board")
                 .usernameParameter("user_id")
                 .passwordParameter("password")
+                .successHandler(new LoginSuccessHandler())
+                .failureUrl("/login?loginError") // default
                 .permitAll();
 
         http.logout()
@@ -46,6 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .permitAll();
 
+        http.sessionManagement().maximumSessions(1);
     }
 
     @Override
@@ -54,7 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 }
 
-
+//.csrf().disable()
 //  참고용 코드
 //        http.csrf().disable().authorizeRequests()
 //                // /about 요청에 대해서는 로그인을 요구함

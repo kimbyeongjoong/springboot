@@ -14,7 +14,7 @@
         <form method="POST" action="write_reply_do" name="user_board" class="reg_form" enctype="multipart/form-data">
             <input type="hidden" name="board_num" id="board_num">
             <input type="hidden" name="origin_no" id="origin_no">
-            <input th:value="${session.member.user_id}" type="text" name="writer" class="form-control col-1 writer" readonly>
+            <input th:value="${session.member.principal.user_id}" type="text" name="writer" class="form-control col-1 writer" readonly>
             <label for="title">&nbsp제목:</label>
             <input type="text" name="title" id="title" class="board_title form-control col-6" th:value="|└ 답변 : ${board.title}|" required>
             <textarea id="summernote" name="content" required></textarea>

@@ -34,15 +34,6 @@ public class UserController {
     @Autowired
     ConfirmLogin confirmLogin;
 
-    @GetMapping("user_info")
-    public String user_info(Model model){
-
-        List<User_infoVo> user_info_list = userService.selectUser();
-        model.addAttribute("user_info_list", user_info_list);
-
-        return "user/user_info";
-    }
-
     @GetMapping("user_board")
     public String board_view(
             @ModelAttribute BoardParameterVo boardParameterVo,
@@ -109,7 +100,7 @@ public class UserController {
         return "redirect:user_board";
     }
 
-    @PostMapping(value="uploadSummernoteImageFile", produces = "application/json")
+    @PostMapping(value = "uploadSummernoteImageFile", produces = "application/json")
     @ResponseBody
     public JsonObject uploadSummernoteImageFile(@RequestParam("file") MultipartFile multipartFile) {
 
@@ -249,9 +240,16 @@ public class UserController {
 
     @PostMapping("userCommentWrite")
     @ResponseBody
-    public String userCommentWrite(@ModelAttribute User_commentVo user_commentVo){
-
+    public String userCommentWrite(
+            @ModelAttribute User_commentVo user_commentVo,
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        // 로그인 상태가 올바른지 확인
+        boolean result = confirmLogin.ConfirmLoginExpired(request, response);
+        if(!result)
+            return "";
         // 본문에 댓글 달기
+//      board_info.setUser_ip(request.getRemoteAddr());
         user_commentVo.setUser_ip("192.168.0.4");
         userService.userCommentWrite(user_commentVo);
         // null 이 들어오는 경우가 있기 때문에 Integer 사용
@@ -259,30 +257,27 @@ public class UserController {
         // 글이 하나도 없을 경우 board_num = 1, 있을 경우 board_num = max_board
         int comment_num = max_comment != null ? max_comment : 1;
         userService.equalsCommentOriginNo(comment_num);
-        logger.debug("ajax test1 Board_num() = " + user_commentVo.getBoard_num());
-        logger.debug("ajax test2 Writer() = " + user_commentVo.getWriter());
-        logger.debug("ajax test3 Content() = " + user_commentVo.getContent());
-        logger.debug("ajax test4 ip() = " + user_commentVo.getUser_ip());
-        logger.debug("ajax test5 Comment_num() = " + user_commentVo.getComment_num());
-        logger.debug("ajax = " + user_commentVo);
+        logger.info("user_commentVo = " + user_commentVo);
 
         return "success";
     }
 
     @PostMapping("userCommentWrite2")
     @ResponseBody
-    public String userCommentWrite2(@ModelAttribute User_commentVo user_commentVo){
-
-        // 댓글에 댓글 달기
+    public String userCommentWrite2(
+            @ModelAttribute User_commentVo user_commentVo,
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        // 로그인 상태가 올바른지 확인
+        boolean result = confirmLogin.ConfirmLoginExpired(request, response);
+        if(!result)
+            return "";
+        // 대댓글 달기
+//      user_commentVo.setUser_ip(request.getRemoteAddr());
         user_commentVo.setUser_ip("192.168.0.4");
-        userService.userCommentWrite2(user_commentVo);
         userService.commentGroupUpdate(user_commentVo.getComment_origin_no());
-        logger.debug("ajax test1 = " + user_commentVo.getBoard_num());
-        logger.debug("ajax test2 = " + user_commentVo.getWriter());
-        logger.debug("ajax test3 = " + user_commentVo.getContent());
-        logger.debug("ajax test4 = " + user_commentVo.getUser_ip());
-        logger.debug("ajax test5 Comment_num() = " + user_commentVo.getComment_num());
-        logger.debug("ajax = " + user_commentVo);
+        userService.userCommentWrite2(user_commentVo);
+        logger.info("user_commentVo = " + user_commentVo);
 
         return "success";
     }

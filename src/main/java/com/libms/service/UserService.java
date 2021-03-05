@@ -80,30 +80,24 @@ public class UserService {
     public void userBoardWrite(User_boardVo user_boardVo){
         mapper.userBoardWrite(user_boardVo);
     }
-
     public void userBoardModifyDo(User_boardVo user_boardVo){
         mapper.userBoardModifyDo(user_boardVo);
     }
-
     public User_boardVo boardView(int board_num){
         return mapper.boardView(board_num);
     }
-
     public List<Board_categoryVo> categorySelect(){
         return mapper.categorySelect();
     };
-
     public void upHits(int board_num){
         mapper.upHits(board_num);
     }
-
     public void userBoardDelete(int board_num){
         mapper.userBoardDelete(board_num);
     }
 
     // 로그인
-    public User_infoVo authenticate(LoginForm loginForm){
-
+    public User_infoVo loginAuthenticate(LoginForm loginForm){
         // test 코드 참고
 
         try {
@@ -122,7 +116,7 @@ public class UserService {
         return mapper.authenticate(loginForm);
     }
 
-    // salt 값 추출
+    // salt 값 DB에서 가져오기
     public String getSalt(LoginForm loginForm){
         return mapper.getSalt(loginForm);
     }

@@ -4,10 +4,14 @@
     <title>User_info</title>
     <meta charset="utf-8" />
     <link th:replace="common/common :: css">
-    <link rel="stylesheet" href="../static/css/myCss/user_info.css">
+    <style>
+        *{
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
-    <div class="Noto Sans" style="width: 80%; margin: auto;">
+    <div>
         <h1>유저 정보</h1>
         <div>
             <table class="table table-striped table-hover">
@@ -48,6 +52,9 @@
                         <th th:text="${info.address1}">주소</th>
                         <th th:text="${info.address2}">상세주소</th>
                         <th th:text="${info.join_date}">가입일</th>
+                        <th th:text="${info.user_birth}">가입일</th>
+                        <th th:text="${info.salt}">가입일</th>
+                        <th th:text="${info.role}">가입일</th>
                     </tr>
                 </tbody>
             </table>

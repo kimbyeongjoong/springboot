@@ -5,6 +5,8 @@
     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>user_board</title>
     <link th:replace="common/common :: css">
     <link rel="stylesheet" href="../static/css/myCss/myBoardView.css">
@@ -30,13 +32,13 @@
                 </div>
                 <div class="articleMenu">
                     <a href="user_board" class="btn btn-outline-primary">목록</a>
-                    <a sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" th:if="${board.writer} == ${session.member.user_id}"
+                    <a sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" th:if="${board.writer} == ${session.member.principal.user_id}"
                         th:href="@{user_board_modify(board_num=${board.board_num})}" class="btn btn-outline-primary">수정</a>
                     <a th:if="${board.group_ord} == 0"
                         sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')"
                         th:href="@{user_board_reply(board_num=${board.board_num}, title=${board.title}, origin_no=${board.origin_no})}" 
                         class="btn btn-outline-primary" id="del">답변</a>
-                    <a sec:authorize="hasRole('ROLE_USER')" th:if="${board.writer} == ${session.member.user_id}"
+                    <a sec:authorize="hasRole('ROLE_USER')" th:if="${board.writer} == ${session.member.principal.user_id}"
                         href="javascript:confirmDelete();" class="btn btn-outline-primary" id="del">삭제</a>
                     <a sec:authorize="hasRole('ROLE_ADMIN')" href="javascript:confirmDelete();" class="btn btn-outline-primary" id="admin_del">삭제</a>
                     <!-- <a sec:authorize="hasRole('ROLE_USER')" th:href="@{user_board_comment(board_num=${board.board_num})}" 
@@ -61,8 +63,8 @@
                                 </div>
                                 <div class="bottomLine" sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')">
                                     <a sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" class="btn btn-outline-info btn-sm"  
-                                        th:onclick="comment_to_comment([[${info.comment_num}]])">댓글</a>
-                                    <a th:if="${info.writer} == ${session.member.user_id}" class="btn btn-outline-info btn-sm"  
+                                        th:onclick="comment_on_comment([[${info.comment_num}]])">댓글</a>
+                                    <a th:if="${info.writer} == ${session.member.principal.user_id}" class="btn btn-outline-info btn-sm"  
                                         th:onclick="comment_delete([[${info.comment_num}]], [[${info.writer}]])">삭제</a>
                                     <a sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-outline-info btn-sm"
                                         th:onclick="comment_delete([[${info.comment_num}]], [[${info.writer}]])">삭제</a>
@@ -73,10 +75,10 @@
                                         <input type="hidden" name="comment_num" th:id="|comment_num${info.comment_num}|">
                                         <input type="hidden" name="comment_origin_no" th:id="|comment_origin_no${info.comment_num}|">
                                         <input type="hidden" name="writer" th:id="|comment_writer${info.comment_num}|">
-                                        <textarea class="form-control" name="content" th:id="|comment_content${info.comment_num}|" rows="3" cols="130" style="resize: none;"></textarea>
+                                        <textarea class="form-control" name="content" th:id="|comment_content${info.comment_num}|" rows="3" cols="130" style="resize: none;" placeholder="댓글을 작성해주세요."></textarea>
                                         <br>
                                         <a class="btn btn-outline-primary btn-sm" 
-                                            th:onclick="comment_write2([[${board.board_num}]], [[${info.comment_num}]], [[${info.comment_origin_no}]], [[${session.member.user_id}]])">대댓글등록</a>
+                                            th:onclick="comment_write2([[${board.board_num}]], [[${info.comment_num}]], [[${info.comment_origin_no}]], [[${session.member.principal.user_id}]])">대댓글등록</a>
                                         <a class="btn btn-outline-primary btn-sm" th:onclick="comment_cansel([[${info.comment_num}]])">취소</a>
                                     </form>
                                 </div>
@@ -92,10 +94,10 @@
                         <form action="#" id="commentForm" method="POST">
                             <input type="hidden" name="board_num" id="comment_board_num">
                             <input type="hidden" name="writer" id="comment_writer">
-                            <textarea class="form-control" name="content"  rows="3" cols="130" style="resize: none;"></textarea>
+                            <textarea class="form-control" name="content"  rows="3" cols="130" style="resize: none;" placeholder="댓글을 작성해주세요."></textarea>
                             <br>
                             <a class="btn btn-outline-primary btn-sm" 
-                                th:onclick="comment_write([[${board.board_num}]], [[${session.member.user_id}]])">댓글등록</a>
+                                th:onclick="comment_write([[${board.board_num}]], [[${session.member.principal.user_id}]])">댓글등록</a>
                         </form>
                     </div>
                 </div>
@@ -107,6 +109,9 @@
     <script th:inline="javascript">
         // 다른 라이브러리, 다른 버전의 jQuery와 충돌 방지하기
         let $j = jQuery.noConflict();
+        // // ajax 통신할 때에 헤더에 csrf 적용하여 보내기
+        // let token = $j("meta[name='_csrf']").attr("content");
+        // let header = $j("meta[name='_csrf_header']").attr("content");
 
         // 댓글 indent 값으로 css구분하기
         let comment_indent = document.querySelectorAll('.commentOneBox');
@@ -141,6 +146,8 @@
                     dataType : 'text',
                     data : param,
                     success : function(data){
+                        if(data != 'success')
+                            alert('세션이 만료되었습니다.');
                         console.log('ajax success = ', data);
                         location.reload();
                     },
@@ -154,14 +161,12 @@
         }
 
         // 대댓글 창 열기
-        let append_confirm = false;
-        function comment_to_comment(comment_num){
-            if(append_confirm === false){
-                append_confirm = true;
-                $j('#commentWriteDiv').hide();
-                // $j('#commentWriteDiv' + comment_num).show();
-                $j('#commentWriteDiv' + comment_num).css("display","block");
-            }
+        let comment_num_temp;
+        function comment_on_comment(comment_num){
+            $j('#commentWriteDiv' + comment_num_temp).css("display","none"); // 먼저 열린 창이 있다면 닫기
+            $j('#commentWriteDiv').hide(); // 일반 댓글 작성 창 닫기
+            $j('#commentWriteDiv' + comment_num).css("display","block"); // 대댓글 작성 창 열기
+            comment_num_temp = comment_num; // 대댓글 창 저장
         }
 
         //대댓글등록
@@ -173,7 +178,6 @@
             console.log("content = " + document.getElementById('comment_content' + comment_num).value);
             let param = new Object();
             param = $j('#commentForm' + comment_num).serialize();
-            alert("comment_write2 param" + param);
             $j.ajax({
                     type : 'post',
                     url : './userCommentWrite2',
@@ -193,30 +197,33 @@
 
         // 대댓글 창 없애기
         function comment_cansel(comment_num){
-            if(append_confirm === true){
-                append_confirm = false;
-                $j('#commentWriteDiv').show();  // 일반 댓글 작성 창
-                $j('#commentWriteDiv' + comment_num).css("display","none"); // 대댓글 작성 창
-            }
+            $j('#commentWriteDiv').show();  // 일반 댓글 작성 창 열기
+            $j('#commentWriteDiv' + comment_num).css("display","none"); // 대댓글 창 닫기
         }
 
         //댓글삭제
         function comment_delete(comment_num, writer){
-            let result = confirm(comment_num + '번 게시물을 삭제하시겠습니까?\\n작성자 : ' + writer);
+            // ajax 통신할 때에 헤더에 csrf 적용하여 보내기
+            let token = $j("meta[name='_csrf']").attr("content");
+            let header = $j("meta[name='_csrf_header']").attr("content");
+            let result = confirm(comment_num + '번 게시물을 삭제하시겠습니까? 작성자 : ' + writer);
             if(!result){
                 alert('삭제 취소');
                 return false;
             }
-            let obj = {
-                comment_num : comment_num,
-                writer : writer
-            };
             $j.ajax({
                     type : 'post',
                     url : './commentDelete',
                     dataType : 'text',
-                    data : obj,
+                    data : {
+                        comment_num : comment_num,
+                        writer : writer
+                    },
+                    beforeSend : function(xhr){   /*데이터를 전송하기 전에 헤더에 csrf값을 설정한다*/
+                        xhr.setRequestHeader(header, token);
+                    },
                     success : function(data){
+                        alert('success');
                         location.reload();
                     },
                     error:function(request, status, error){
