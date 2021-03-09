@@ -10,6 +10,6 @@ public class BoardParameterVo {
     private int limit;
     private int offset;
     private String search_word;
-    private String page_temp;
+    private String page;
     private int list_count;
 }

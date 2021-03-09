@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -31,7 +32,7 @@ public class MainController {
         return "index";
     }
 
-    @GetMapping("/login")
+    @RequestMapping("/login")
     public String loginPage(@ModelAttribute("loginForm")LoginForm loginForm, Model model){
         return "login";
     }
@@ -43,8 +44,8 @@ public class MainController {
 
     @GetMapping("user_info/user_info")
     public String user_info(Model model){
-        List<User_infoVo> user_info_list = userService.selectUser();
-        model.addAttribute("user_info_list", user_info_list);
+//        List<User_infoVo> user_info_list = userService.selectUser();
+//        model.addAttribute("user_info_list", user_info_list);
 
         return "user_info/user_info";
     }

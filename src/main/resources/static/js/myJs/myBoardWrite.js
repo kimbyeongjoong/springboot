@@ -1,5 +1,13 @@
 let $j = jQuery.noConflict();
 
+// // ajax 통신할 때에 헤더에 csrf 적용하여 보내기
+let header = $j("meta[name='_csrf_header']").attr("content");
+let token = $j("meta[name='_csrf']").attr("content");
+
+$j(document).ajaxSend(function(e, xhr, options) {
+     xhr.setRequestHeader(header, token);
+});
+
 $j('#summernote').summernote({
     height: 400,                 // 에디터 높이
     minHeight: null,             // 최소 높이
@@ -49,6 +57,11 @@ function uploadSummernoteImageFile(file, editor) {
             //항상 업로드된 파일의 url이 있어야 한다.
             console.log("data.url = " + data.url);
             $j(editor).summernote('insertImage', data.url);
+        },
+        error:function(request, status, error){
+            alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            if(error != null)
+                location.reload();
         }
     });
 }

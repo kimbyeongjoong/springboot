@@ -47,7 +47,6 @@
             <a href="user_info/user_info" class="btn btn-outline-secondary btn-sm">회원정보</a>
             <a href="logout" class="btn btn-outline-secondary btn-sm">로그아웃</a>
         </div>
-        내 생각이지만 a 태그로 로그아웃을 할때는 시큐리티 어댑터에서 csrf설정을 ignore해야할것같다.
         <div th:if="${session.member != null}">
             <!-- <span sec:authentication="principal.User_infoVo">
                 test
@@ -62,7 +61,6 @@
         <span sec:authorize="hasRole('ROLE_USER')">
                 <p>hasRole('ROLE_USER')</p>
         </span>
-
         <hr/>
         <a class="btn btn-info pull-right" href="user/user_board">게시판으로</a>
         <!-- paging -->

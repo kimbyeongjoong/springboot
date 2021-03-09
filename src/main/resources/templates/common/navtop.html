@@ -37,9 +37,11 @@
                     <li sec:authorize="isAuthenticated()" class="nav-item">
                         <span class="nav-link active" th:text="|${session.member.principal.user_name}님 안녕하세요.|"></span>
                     </li>
-                    <form action="../logout" method="POST">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button>로그아웃</button>
+                    <!-- csrf토큰 자동 추가 방법 (thymeleaf)
+                    Post Request를 보내는 form 에 다음과 같이 th:action="@{/requesturl}" 로 선언 -->
+                    <form th:action="@{../logout}" method="POST">
+                        <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/> -->
+                        <button type="submit" class="nav-link">로그아웃</button>
                     </form>
                     <!-- <li sec:authorize="isAuthenticated()" class="nav-item">
                         <a class="nav-link" href="../logout">로그아웃</a>

@@ -1,10 +1,12 @@
 package com.libms.service;
 
+import com.libms.configuration.CustomUserDetails;
 import com.libms.mapper.UserMapper;
 import com.libms.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -23,8 +25,8 @@ public class UserService {
     @Autowired
     UserMapper mapper;
 
-    public List<User_infoVo> selectUser(){
-        return mapper.selectUser();
+    public UserDetails selectUser(String user_id){
+        return mapper.selectUser(user_id);
     }
 
     public List<User_boardVo> selectUserBoard(BoardParameterVo boardParameterVo){
@@ -32,7 +34,7 @@ public class UserService {
         // 페이징
         int page = 0; // 현재 보여주고 있는 페이지
         int limit = 10; // 몇개까지 보여줄 건지 정하는 변수
-        String page_temp = boardParameterVo.getPage_temp();
+        String page_temp = boardParameterVo.getPage();
         int list_count = boardParameterVo.getList_count();
 
         if(page_temp != null)

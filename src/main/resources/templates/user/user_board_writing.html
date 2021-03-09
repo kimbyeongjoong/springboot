@@ -2,6 +2,8 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>user_board_writing</title>
     <link th:replace="common/common :: css">
     <link rel="stylesheet" href="../static/css/summernote/summernote-lite.css">
@@ -11,7 +13,8 @@
     <header th:replace="common/navtop :: navtop" ></header>
     <div class="article_write">
         <p class="write_title">글쓰기</p>
-        <form method="POST" action="user_board_write" name="user_board" class="reg_form" enctype="multipart/form-data">
+        <!-- <form th:action="@{/authenticate}" method="post" th:object="${loginForm}" class="articleForm"></form> -->
+        <form th:action="@{/user/user_board_write}" method="POST" name="user_board" class="reg_form" enctype="multipart/form-data">
             <select name="category" id="category" class="custom-select col-1" required>
                 <option th:each="cat : ${category}" th:text="${cat.category_name}" th:value="${cat.category_no}"></option>
             </select>

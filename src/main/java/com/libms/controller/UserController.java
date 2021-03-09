@@ -1,6 +1,7 @@
 package com.libms.controller;
 
 import com.google.gson.JsonObject;
+import com.libms.configuration.CustomUserDetails;
 import com.libms.service.UserService;
 import com.libms.util.ConfirmLogin;
 import com.libms.vo.*;
@@ -8,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +41,7 @@ public class UserController {
             @ModelAttribute BoardParameterVo boardParameterVo,
             HttpServletRequest request,
             Model model){
-
+        System.out.println("boardParameterVo = " + boardParameterVo.getPage());
         int list_count = userService.listCount();
 //        String page_temp = request.getParameter("page");
 //        String search_word = request.getParameter("search_word");
@@ -80,6 +82,11 @@ public class UserController {
             @ModelAttribute User_boardVo board_info,
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
+
+        StringBuffer getRequestURL = request.getRequestURL();
+        String referer = request.getHeader("Referer");
+        System.out.println("getRequestURL = " + getRequestURL);
+        System.out.println("referer = " + referer);
 
         // 로그인 상태가 올바른지 확인
         boolean result = confirmLogin.ConfirmLogin(request, response, board_info.getWriter());
@@ -289,14 +296,22 @@ public class UserController {
             HttpServletRequest request,
             HttpServletResponse response)throws IOException{
 
-        // 로그인 상태가 올바른지 확인
-        boolean result = confirmLogin.ConfirmLogin(request, response, user_commentVo.getWriter());
-        if(!result)
-            return "error";
+        System.out.println("///////////commentDelete 시작///////////");
 
-        userService.commentDelete(user_commentVo.getComment_num());
+        StringBuffer getRequestURL = request.getRequestURL();
+        String referer = request.getHeader("Referer");
+        System.out.println("getRequestURL = " + getRequestURL);
+        System.out.println("referer = " + referer);
+
         logger.info("comment delete number = " + user_commentVo.getComment_num());
         logger.info("comment delete writer = " + user_commentVo.getWriter());
+        // 로그인 상태가 올바른지 확인
+        boolean result = confirmLogin.ConfirmLogin(request, response, user_commentVo.getWriter());
+        if(!result) {
+            return "error";
+        }
+
+        userService.commentDelete(user_commentVo.getComment_num());
         return "success";
     }
 

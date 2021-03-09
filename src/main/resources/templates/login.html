@@ -12,20 +12,23 @@
     </style>
 </head>
 <body>
+    <a href="/" class="btn btn-outline-light">메인으로</a>
     <div class="container">
         <div class="articleLogin">
             <h1 class="title">Login</h1>
-            <p th:if="${loginError}" class="error text-danger">Wrong user or password</p>
+            <!-- <p th:if="${error} == true" class="error text-danger">Wrong user or password</p> -->
+            <!--/* <span th:if="${#strings.isEmpty(errorMessage)}" class="error text-danger">test2</span> */-->
             <form th:action="@{/authenticate}" method="post" th:object="${loginForm}" class="articleForm">
-                <!-- <label for="user_id">ID</label>: -->
-                <input type="text" id="user_id" th:field="*{user_id}" autofocus placeholder="ID"><br>
-                <!-- <label for="password">Password</label>: -->
-                <input type="password" id="password" th:field="*{password}" placeholder="PASSWORD"><br>
+                <!--/* <label for="user_id">ID</label>: */-->
+                <input type="text" id="user_id" th:field="*{user_id}" th:value="*{user_id}" autofocus placeholder="ID"><br>
+                <!--/* <label for="password">Password</label>: */-->
+                <input type="password" id="password" th:field="*{password}" th:value="*{password}" placeholder="PASSWORD"><br>
                 <input type="submit" value="Log in" class="btn btn-info pull-right loginBtn">
-                <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
             </form>
-        </div>
-        <a href="/">메인으로</a>
+            <!-- <p th:text="*{user_id}"></p>
+                <p th:text="*{password}"></p> -->
+            </div>
+        <p th:if="${not #strings.isEmpty(errorMessage)}" th:text="${errorMessage}" class="alert alert-danger"></p>
     </div>
     <script th:replace="common/common :: js"></script> 
 </body>

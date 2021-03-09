@@ -1,7 +1,9 @@
 package com.libms.mapper;
 
+import com.libms.configuration.CustomUserDetails;
 import com.libms.vo.*;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
 
-    List<User_infoVo> selectUser();
+    UserDetails selectUser(String user_id);
     List<User_boardVo> selectUserBoard(BoardParameterVo boardParameterVo);
     void userBoardWrite(User_boardVo user_boardVo);
     void userBoardModifyDo(User_boardVo user_boardVo);

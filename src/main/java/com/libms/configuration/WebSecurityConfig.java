@@ -3,6 +3,7 @@ package com.libms.configuration;
 import com.libms.component.UserAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,6 +11,9 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -21,11 +25,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         // 정적 자원에 대해서는 Security 설정을 적용하지 않음.
-        web
-                .ignoring()
-                .requestMatchers(PathRequest
-                        .toStaticResources()
-                        .atCommonLocations());
+        web.ignoring()
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+            .requestMatchers(new AntPathRequestMatcher("/common/common"));
     }
 
     @Override
@@ -40,8 +42,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/authenticate")
                 .usernameParameter("user_id")
                 .passwordParameter("password")
-                .successHandler(new LoginSuccessHandler())
-                .failureUrl("/login?loginError") // default
+                .successHandler(authenticationSuccessHandler())
+                .failureHandler(authenticationFailureHandler())
                 .permitAll();
 
         http.logout()
@@ -57,6 +59,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider);
+    }
+
+    // spring security bean 설정은 여기서 한다.
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler(){
+        return new LoginSuccessHandler();
+    }
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler(){
+        String user_id = "user_id";
+        String password = "password";
+        return new LoginFailureHandler(user_id, password);
     }
 }
 

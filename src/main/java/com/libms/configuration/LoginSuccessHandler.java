@@ -20,8 +20,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
-        System.out.println("authentication1 = " + authentication.toString());
-        System.out.println("authentication2 = " + authentication.getName());
         HttpSession session = request.getSession();
         session.setAttribute("member", authentication);
         response.sendRedirect("/");
