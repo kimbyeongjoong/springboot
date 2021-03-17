@@ -46,7 +46,7 @@ public class MailService {
     }
 
     // 회원가입 인증 메일 보내기
-    public void sendAuthMail(JoinConfirmVo joinConfirmVo){
+    public String sendAuthMail(JoinConfirmVo joinConfirmVo){
         //6자리 난수 인증번호 생성
         String authKey = getKey(6);
         System.out.println("authKey = " + authKey);
@@ -66,6 +66,7 @@ public class MailService {
             }
         };
         mailSender.send(preparator);
+        return authKey;
     }
 
 

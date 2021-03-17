@@ -5,8 +5,8 @@
     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
     <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
     <title>user_board</title>
     <link th:replace="common/common :: css">
     <link rel="stylesheet" href="../static/css/myCss/myBoardView.css">
@@ -14,7 +14,7 @@
 <body>
 
     <header th:replace="common/navtop :: navtop" ></header>
-
+    
         <div class="articleView">
             <div class="articleHead list-group">
                 <div class="articleInfo">
@@ -63,7 +63,7 @@
                                 </div>
                                 <div class="bottomLine" sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')">
                                     <a sec:authorize="hasAnyRole('ROLE_USER','ROLE_ADMIN')" class="btn btn-outline-info btn-sm"  
-                                        th:onclick="comment_on_comment([[${info.comment_num}]])">댓글</a>
+                                        th:onclick="nested_comment_open([[${info.comment_num}]])">댓글</a>
                                     <a th:if="${info.writer} == ${session.member.principal.user_id}" class="btn btn-outline-info btn-sm"  
                                         th:onclick="comment_delete([[${info.comment_num}]], [[${info.writer}]])">삭제</a>
                                     <a sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-outline-info btn-sm"
@@ -78,8 +78,8 @@
                                         <textarea class="form-control" name="content" th:id="|comment_content${info.comment_num}|" rows="3" cols="130" style="resize: none;" placeholder="댓글을 작성해주세요."></textarea>
                                         <br>
                                         <a class="btn btn-outline-primary btn-sm" 
-                                            th:onclick="comment_write2([[${board.board_num}]], [[${info.comment_num}]], [[${info.comment_origin_no}]], [[${session.member.principal.user_id}]])">대댓글등록</a>
-                                        <a class="btn btn-outline-primary btn-sm" th:onclick="comment_cansel([[${info.comment_num}]])">취소</a>
+                                            th:onclick="nested_comment_write([[${board.board_num}]], [[${info.comment_num}]], [[${info.comment_origin_no}]], [[${session.member.principal.user_id}]])">대댓글등록</a>
+                                        <a class="btn btn-outline-primary btn-sm" th:onclick="nested_comment_cansel([[${info.comment_num}]])">취소</a>
                                     </form>
                                 </div>
                             </div>
@@ -113,7 +113,6 @@
             /* <!CDATA[ */
             let board_num = /*[[${board.board_num}]]*/ "";
             /* ]]> */
-            alert('result = ', result);
             if(result)
                 location.href = "user_board_delete?board_num=" + board_num;
 

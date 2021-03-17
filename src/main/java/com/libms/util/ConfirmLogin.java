@@ -5,6 +5,7 @@ import com.libms.service.CustomUserDetailsService;
 import com.libms.service.UserService;
 import com.libms.vo.User_infoVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,27 +30,14 @@ public class ConfirmLogin {
             HttpServletRequest request,
             HttpServletResponse response) throws IOException {
 
-        String username = "";
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-//        if (principal instanceof UserDetails) {
-//            username = ((UserDetails)principal).getUsername();
-//        } else {
-//            username = principal.toString();
-//        }
-//
-//        CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(username);
-
-        System.out.println("principal = " + principal.getClass());
-        System.out.println("username = " + username);
-//        System.out.println("CustomUserDetails = " + userDetails.getUser_id() + " and role = " + userDetails.getRole());
-
+        HttpSession session = request.getSession();
         try{
-            if (principal == null) {
+            Authentication authentication = (Authentication) session.getAttribute("member");
+            if (authentication == null) {
                 response.setContentType("text/html; charset=UTF-8");
                 PrintWriter out = response.getWriter();
                 out.print("<script>");
-                out.print("alert('잘못된 접근입니다.');");
+                out.print("alert('세션이 만료되었습니다.');");
                 out.print("location.href = '../login';");
                 out.print("</script>");
                 out.flush();

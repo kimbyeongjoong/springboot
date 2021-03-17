@@ -82,6 +82,7 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
 //        loginForm.setPassword(null);
 
         // ↓ role 정보를 DB에서 가져와서 UsernamePasswordAuthenticationToken 의 3번째 매개변수에 넣는 용도였다.
+        //   지금은 userDetails 에 있는 authorities 를 가져오면 되기 때문에 사용하지 않는 코드다.
 //        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         // 실제로는 DB 등의 여러가지 자원에서 가져와서 권한 정보를 만들어야 한다.
 //      authorities.add(new SimpleGrantedAuthority("ROLE_USER"));   // "ROLE_USER" 하지말고 vo.getRole() 이런 식으로.

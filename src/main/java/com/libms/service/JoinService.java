@@ -42,7 +42,7 @@ public class JoinService {
 
 
     @Transactional
-    public void transactionalJoin(
+    public void transactionJoin(
             User_infoVo user_infoVo,
             User_telVo user_telVo,
             User_emailVo user_emailVo){

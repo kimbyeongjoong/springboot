@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+
     @Autowired
     UserService userService;
+
     @Override
     public UserDetails loadUserByUsername(String user_id) throws UsernameNotFoundException {
         UserDetails user = userService.selectUser(user_id);

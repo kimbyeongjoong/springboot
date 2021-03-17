@@ -1,11 +1,11 @@
 // 다른 라이브러리, 다른 버전의 jQuery와 충돌 방지하기
 let $j = jQuery.noConflict();
-// // ajax 통신할 때에 헤더에 csrf 적용하여 보내기
+// ajax 통신할 때 헤더에 csrf 적용하여 보내기
 let header = $j("meta[name='_csrf_header']").attr("content");
 let token = $j("meta[name='_csrf']").attr("content");
 
 $j(document).ajaxSend(function(e, xhr, options) {
-        xhr.setRequestHeader(header, token);
+    xhr.setRequestHeader(header, token);
 });
 
 // 댓글 indent 값으로 css구분하기
@@ -47,7 +47,7 @@ function comment_write(board_num, writer){
 
 // 대댓글 창 열기
 let comment_num_temp;
-function comment_on_comment(comment_num){
+function nested_comment_open(comment_num){
     $j('#commentWriteDiv' + comment_num_temp).css("display","none"); // 먼저 열린 창이 있다면 닫기
     $j('#commentWriteDiv').hide(); // 일반 댓글 작성 창 닫기
     $j('#commentWriteDiv' + comment_num).css("display","block"); // 대댓글 작성 창 열기
@@ -55,7 +55,7 @@ function comment_on_comment(comment_num){
 }
 
 //대댓글등록
-function comment_write2(board_num, comment_num, comment_origin_no, writer){
+function nested_comment_write(board_num, comment_num, comment_origin_no, writer){
     $j('#comment_board_num' + comment_num).val(board_num);
     $j('#comment_num' + comment_num).val(comment_num);
     $j('#comment_origin_no' + comment_num).val(comment_origin_no);
@@ -80,7 +80,7 @@ function comment_write2(board_num, comment_num, comment_origin_no, writer){
 }
 
 // 대댓글 창 없애기
-function comment_cansel(comment_num){
+function nested_comment_cansel(comment_num){
     $j('#commentWriteDiv').show();  // 일반 댓글 작성 창 열기
     $j('#commentWriteDiv' + comment_num).css("display","none"); // 대댓글 창 닫기
 }

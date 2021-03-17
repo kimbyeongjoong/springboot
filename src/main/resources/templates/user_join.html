@@ -2,16 +2,18 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
     <title>user_join</title>
     <link th:replace="common/common :: css">
-    <link rel="stylesheet" href="static/css/myCss/user_join.css">
+    <link rel="stylesheet" href="static/css/myCss/myUserJoin.css">
 </head>
 <body>
 
     <!-- <header th:replace="common/navtop :: navtop" ></header> -->
     <div class="container">
         <h1>회원가입</h1>
-        <form action="user_join_do" method="post" name="join">
+        <form th:action="@{/user_join_do}" method="post" name="join">
             <table summary="이름, 아이디, 비밀번호, 비밀번호 확인, 이메일, 이메일수신여부, 주소, 휴대폰, 유선전화, 생년월일 순으로 회원가입 정보를 등록할수 있습니다." class="table">
                 <tbody>
                     <tr>
@@ -112,7 +114,7 @@
                                     </p>
                                     <!-- (이메일 인증을 누르면 입력한 메일로 인증번호를 보내고 그것을 여기에 입력하면 인증완료. 메일일 뿐이지 휴대폰 인증과 비슷하다)
                                         인증번호는 이메일 인증을 누른 시점에 만들것인지 가입창에 들어온 시점에 만들것인지 생각해둘것 -->
-                                    <input type="text" class="form-control" id="authKeyTemp" name="authKey"><br>
+                                    <input type="text" class="form-control" id="authKey" name="authKey"><br>
                                     <!-- authKey라는 인풋 네임이 새로 생겼을 뿐이다. vo에 authKey를 추가하고 가입 controller에 setAuthkey() 집어넣자. -->
                                     <button type="button">확인</button>
                                 </div>
@@ -227,102 +229,8 @@
     </div>
 
     <script th:replace="common/common :: js"></script>
-    <script type="text/javascript" src="static/js/myJs/user_join.js"></script>
+    <script type="text/javascript" src="static/js/myJs/myUserJoin.js"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <script>
-        // 다른 라이브러리, 다른 버전의 jQuery와 충돌 방지하기
-        let $j = jQuery.noConflict();
-        //필요한 엘리먼트들을 선택한다.
-        const openButton = document.getElementById("modalOpen");
-        const modal = document.querySelector(".modal");
-        const overlay = modal.querySelector(".md_overlay");
-        const closeButton = modal.querySelector("button");
-        //동작함수
-        const openModal = () => {
-            emailDuplicateCheck();
-        }
-        const closeModal = () => {
-            modal.classList.add("hidden");
-        }
-        //클릭 이벤트
-        openButton.addEventListener("click", openModal);
-        closeButton.addEventListener("click", closeModal);
-
-        //아이디 중복 체크
-        $j("#id").keyup(function() {
-             let inputId = document.getElementById('id').value;
-             $j.ajax({
-                     type : 'post',
-                     url : './idDuplicateCheck',
-                     dataType : 'text',
-                     data : {id : inputId},
-                     success : function(data){
-                         if(data === "success"){
-                             $j('#idDuplicateCheck').val("true");
-                             $j('.idDup').css('display', 'none');
-                         }else if(data === "duplicate"){
-                             $j('#idDuplicateCheck').val("false");
-                             $j('.idDup').css('display', 'block');
-                         }
-                     },
-                     error:function(request, status, error){
-                         alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-                     }
-             });
-        });
-
-        //메일 중복 체크
-        function emailDuplicateCheck(){
-            let emailAuth = new Promise(function(resolve, reject){
-                let email1 = document.getElementById('email1').value;
-                let email2 = document.getElementById('email2').value;
-                let email = email1 + "@" + email2;
-                $j.ajax({
-                    type : 'post',
-                    url : './emailDuplicateCheck',
-                    dataType : 'text',
-                    data : {user_email : email},
-                    success : function(data){
-                        if(data === "success"){
-                            console.log(data)
-                            resolve(data);
-                        }else if(data === "duplicate"){
-                            alert('중복된 메일 입니다.');
-                        }
-                    },
-                    error:function(request, status, error){
-                        alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-                    }
-                });
-            });
-            emailAuth.then(function(resolvedData){
-                console.log('resolvedData = ' + resolvedData);
-                if(resolvedData === "success"){
-                    modal.classList.remove("hidden");
-                    emailAuthenticate();
-                }
-            });
-        }
-        
-        //이메일 인증번호 보내기
-        function emailAuthenticate(){
-            let email1 = $j("#email1").val();
-            let email2 = $j("#email2").val();
-            let email = email1 + "@" + email2;
-            $j.ajax({
-                    type : 'post',
-                    url : './sendAuthMail',
-                    dataType : 'text',
-                    data : {email : email},
-                    success : function(data){
-                        alert("success");
-                    },
-                    error:function(request, status, error){
-                        alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-                    }
-            });
-        }
-    </script>
 </body>
 </html>
 

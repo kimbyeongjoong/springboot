@@ -296,20 +296,16 @@ public class UserController {
             HttpServletRequest request,
             HttpServletResponse response)throws IOException{
 
-        System.out.println("///////////commentDelete 시작///////////");
-
-        StringBuffer getRequestURL = request.getRequestURL();
-        String referer = request.getHeader("Referer");
-        System.out.println("getRequestURL = " + getRequestURL);
-        System.out.println("referer = " + referer);
-
-        logger.info("comment delete number = " + user_commentVo.getComment_num());
-        logger.info("comment delete writer = " + user_commentVo.getWriter());
         // 로그인 상태가 올바른지 확인
         boolean result = confirmLogin.ConfirmLogin(request, response, user_commentVo.getWriter());
         if(!result) {
             return "error";
         }
+        StringBuffer getRequestURL = request.getRequestURL();
+        String referer = request.getHeader("Referer");
+
+        logger.info("comment delete number = " + user_commentVo.getComment_num());
+        logger.info("comment delete writer = " + user_commentVo.getWriter());
 
         userService.commentDelete(user_commentVo.getComment_num());
         return "success";

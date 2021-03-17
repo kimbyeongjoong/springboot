@@ -8,11 +8,16 @@ import com.libms.vo.User_telVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 @Controller
 public class JoinController {
@@ -29,7 +34,7 @@ public class JoinController {
         //StringBuffer 는 값이 계속 변할 때 메모리를 적게 먹는다.
         //그래서 동일한 객체 내에서 문자열이 계속 변해야하는 로직일 때 사용하면 좋다.
         //StringBuffer 와 StringBuilder 의 차이점은 동기화의 유무이다.
-        //StringBuilder 는 동기화를 지원하지 않는다. 그래서 단일쓰레드환경에서 사용하는 것이 좋다.
+        //StringBuilder 는 동기화를 지원하지 않는다. 그래서 단일쓰레드 환경에서 사용하는 것이 좋다.
         StringBuffer title = new StringBuffer(joinConfirmVo.getTitle());
         title.append("_controller 갔다왔습니다~");
         joinConfirmVo.setTitle(title.toString());
@@ -50,7 +55,6 @@ public class JoinController {
     @ResponseBody
     public String emailDuplicateCheck(@ModelAttribute User_emailVo user_emailVo){
         String emailCheck = joinService.emailDuplicateCheck(user_emailVo);
-        System.out.println("emailCheck = " + emailCheck);
         if(emailCheck == null)
             return "success";
         return "duplicate";
@@ -61,7 +65,9 @@ public class JoinController {
     public String user_join_do(
             @ModelAttribute User_infoVo user_infoVo,
             Model model,
-            HttpServletRequest request){
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+
         if(user_infoVo.getAuthKey() == null){
             logger.info("user_infoVo = " + user_infoVo);
             logger.info("* email authentication is null");
@@ -97,11 +103,31 @@ public class JoinController {
         // 유저 권한 정보 넣기
         user_infoVo.setRole("ROLE_USER");
 
+        // 이메일 인증키 검증
+        HttpSession session = request.getSession();
+        String authKey = (String) session.getAttribute("authKey");
+        System.out.println("인증키 = " + authKey);
+        if(authKey.equals(user_infoVo.getAuthKey())){
+            System.out.println("인증키 일치");
+        }else{
+            System.out.println("인증키 확인 실패");
+            response.setContentType("text/html; charset=UTF-8");
+            PrintWriter out = response.getWriter();
+            out.print("<script>");
+            out.print("alert('인증키 오류입니다.');");
+            out.print("location.href = '/';");
+            out.print("</script>");
+            out.flush();
+            return "";
+        }
+        session.removeAttribute("authKey");
+
+
         // join 메소드를 실행하기 전에 이메일 인증을 하게 만든다.
         // 이메일 인증을 하지 않으면 가입 할 수 없게 만든다.
         // 아이디, 비밀번호, 이메일 중복체크도 만든다.
 
-        joinService.transactionalJoin(user_infoVo, tel, email);
+//        joinService.transactionJoin(user_infoVo, tel, email);
 
         // toString 출력
         logger.info("user_infoVo = " + user_infoVo);
