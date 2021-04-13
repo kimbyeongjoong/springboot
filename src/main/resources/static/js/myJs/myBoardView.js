@@ -31,7 +31,7 @@ function comment_write(board_num, writer){
             data : param,
             success : function(data){
                 if(data != 'success')
-                    alert('세션이 만료되었습니다.');
+                    alert('실패하였습니다.');
                 alert('success');
                 console.log('ajax success = ', data);
                 location.reload();

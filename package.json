@@ -1,0 +1,33 @@
+{
+  "name": "libms",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel": "babel src/main/resources/static/js/myJs -d src/main/resources/static/js/babel -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kimbyeongjoong/springboot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kimbyeongjoong/springboot/issues"
+  },
+  "homepage": "https://github.com/kimbyeongjoong/springboot#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.13.10",
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.10",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.22.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "prettier": "2.2.1"
+  },
+  "dependencies": {},
+  "keywords": [],
+  "description": ""
+}
